@@ -1,0 +1,46 @@
+@api = http://localhost:5131
+
+### Risco de hoje no bairro
+GET {{api}}/api/alertas?bairro=Bela Vista
+
+### Cadastrar cidadão (dados fictícios)
+POST {{api}}/api/cidadaos
+Content-Type: application/json
+
+{
+  "nome": "Teste da Silva",
+  "cpf": "529.982.247-25",
+  "telefone": "11900000099",
+  "endereco": "Rua de Teste, 1",
+  "bairro": "Bela Vista",
+  "dependencia": "OxigenioDomiciliar",
+  "autonomiaHoras": 2
+}
+
+### O modelo de ML manda a previsão (use uma data de hoje em diante)
+POST {{api}}/api/previsoes
+Content-Type: application/json
+
+{
+  "data": "2026-11-20",
+  "probabilidade": 0.82,
+  "versaoModelo": "xgb-v1"
+}
+
+### Voluntário registra check-in (no seed, a voluntária da Bela Vista é a pessoa 5)
+POST {{api}}/api/checkins
+Content-Type: application/json
+
+{
+  "alertaId": 1,
+  "voluntarioId": 5,
+  "cidadaoId": 1,
+  "situacao": "Ok",
+  "observacao": null
+}
+
+### Quem ainda não foi checado
+GET {{api}}/api/painel/sem-checkin?alertaId=1
+
+### Resumo por bairro
+GET {{api}}/api/painel/resumo?alertaId=1

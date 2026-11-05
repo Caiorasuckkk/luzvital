@@ -1,0 +1,23 @@
+# .NET
+bin/
+obj/
+*.db
+*.db-shm
+*.db-wal
+.vs/
+*.user
+
+# Node / Expo
+node_modules/
+.expo/
+
+# Java
+target/
+.idea/
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+
+.DS_Store
