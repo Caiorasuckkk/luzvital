@@ -12,7 +12,7 @@ Global Solution CitizenTech · FIAP 2026.2 · Engenharia de Software
 | Problema, em uma frase | Quando um temporal derruba a energia, quem depende dela para viver não é avisado antes, não sabe quanto tempo vai ficar sem luz nem onde achar uma tomada, e ninguém vai checar se está bem |
 | Como funciona | Um modelo treinado com dados do INMET e da ANEEL prevê os dias de risco de apagão. O app avisa os cadastrados com antecedência, aciona vizinhos voluntários para checar essas pessoas e mostra pontos com energia por perto |
 | O que cada parte faz | `api-csharp/` cidadãos, voluntários, alertas e check-ins · `soa-java/` pontos com energia · `mobile/` app do cidadão · `ml/` previsão do dia de risco · `cyber/` proteção dos dados de saúde · `docs/` requisitos e testes |
-| Link do repositório | (preencher) |
+| Link do repositório | https://github.com/Caiorasuckkk/luzvital |
 | Indicador de impacto | % de cadastrados avisados pelo menos 12h antes de um dia de risco · tempo até o primeiro check-in depois que a luz cai |
 | ODS conectados | 3, 7, 10, 11 e 13 |
 
