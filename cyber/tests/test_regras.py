@@ -77,10 +77,18 @@ def test_ficticio_vale_so_no_arquivo_declarado():
 
 
 def test_outro_valor_no_arquivo_declarado_continua_achado():
-    r = pii.encontrar('"Rua de Teste, 1"', arquivo="LuzVital.Api.http").achados
+    r = pii.encontrar('"Rua Nova, 5"', arquivo="LuzVital.Api.http").achados
     assert r[0].regra == "endereco" and r[0].status == pii.ACHADO
     r = pii.encontrar('"Rua Exemplo, 100"', arquivo="LuzVital.Api.http").achados
     assert r[0].status == pii.FICTICIO
+
+
+def test_rua_de_teste_e_oxigenio_so_valem_no_http():
+    texto = '"endereco": "Rua de Teste, 1", "dependencia": "OxigenioDomiciliar"'
+    no_http = pii.encontrar(texto, arquivo="api-csharp/src/LuzVital.Api/LuzVital.Api.http").achados
+    no_seed = pii.encontrar(texto, arquivo="api-csharp/src/LuzVital.Infrastructure/Data/SeedDados.cs").achados
+    assert [a.status for a in no_http] == [pii.FICTICIO, pii.FICTICIO]
+    assert [a.status for a in no_seed] == [pii.ACHADO, pii.ACHADO]
 
 
 # ---------------------------------------------------------------- o relatório nunca tem o dado inteiro

@@ -45,9 +45,9 @@ python -m cyber.empacotar             # gera cyber/entrega/luzvital-cyber.zip
 | Variável | Para que serve |
 | --- | --- |
 | `ANTHROPIC_API_KEY` | Chave da API da Anthropic. Sem ela, o módulo usa o **modo offline**, com textos-modelo por tipo de achado |
-| `LUZVITAL_MODELO` | Modelo usado. O padrão é `claude-opus-5-5` |
+| `LUZVITAL_MODELO` | Modelo usado. O padrão é `claude-haiku-5-5` |
 
-O relatório diz qual modo foi usado e por quê. A opção `--offline` força o modo offline mesmo com chave. Com a API no ar e o modelo aceitando, o pedido sai com `fallbacks: "default"`: se o modelo recusar o pedido por política, a própria API o refaz em outro modelo.
+O relatório diz qual modo foi usado e por quê. A opção `--offline` força o modo offline mesmo com chave. Se a API devolver erro, ou se o modelo recusar o pedido, a análise cai direto no modo offline, sem tentar outro modelo.
 
 **O que vai para o modelo:** só o tipo do dado, onde ele saiu, o arquivo e a linha, o caminho no código e o trecho **já mascarado** (por exemplo `(11) *****-4321`). Esse payload é montado a partir de uma lista fixa de campos. Antes do envio, ele ainda passa pelo motor PII; se aparecer qualquer dado inteiro, o envio é cancelado e o módulo usa o modo offline. Há teste cobrindo esse caso.
 
@@ -91,7 +91,7 @@ Cada regra tem nome, regex, severidade (1 a 5) e categoria.
 
 - **Valores já mascarados** (`529.***.***-25`, `(11) *****-0001`) são reconhecidos e contados à parte. Eles provam que a máscara funcionou e não contam como vazamento.
 - **Nos arquivos `.cs`**, os termos de saúde só valem dentro de strings e comentários. Sem essa regra, cada `TipoDependencia.OxigenioDomiciliar` do código viraria achado.
-- **Dados fictícios declarados** (`pii/ficticios.py`): a exceção vale para o valor e para o arquivo ao mesmo tempo. São eles os telefones `119000000xx`, os endereços "Rua Exemplo" e "Rua Modelo" e o CPF de teste 529.982.247-25, e só dentro do `SeedDados.cs` e do `LuzVital.Api.http`. Qualquer outro valor nesses arquivos continua sendo um achado normal.
+- **Dados fictícios declarados** (`pii/ficticios.py`): a exceção vale para o valor e para o arquivo ao mesmo tempo. Os telefones `119000000xx`, os endereços "Rua Exemplo" e "Rua Modelo" e o CPF de teste 529.982.247-25 valem só dentro do `SeedDados.cs` e do `LuzVital.Api.http`. "Rua de Teste, 1" e `OxigenioDomiciliar` valem só no `LuzVital.Api.http`, o exemplo de POST da API. Qualquer outro valor nesses arquivos continua sendo um achado normal.
 - **O dado inteiro nunca sai do motor:** cada achado traz só o trecho mascarado, a posição, a regra e a severidade.
 
 ### Taint analysis (`taint/`)

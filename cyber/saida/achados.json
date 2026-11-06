@@ -1,5 +1,5 @@
 {
-  "gerado_em": "06/11/2026 15:55",
+  "gerado_em": "06/11/2026 16:11",
   "comando": "python -m cyber.analisar --alvo api-csharp/src --alvo cyber/exemplos/vulneravel",
   "formula": "Índice de Risco Cidadão (0 a 100).\n\n    peso   = severidade da regra (1 a 5) × fator da categoria\n    fator  = saúde 2,0 · segredo 1,5 · identificação, contato e localização 1,0\n    S      = soma dos pesos dos vazamentos não sanitizados\n    Índice = arredonda( 100 × (1 − e^(−S/20)) )\n    Faixa  = 0–29 baixo · 30–59 médio · 60–100 alto\n\nEntram em S:\n    - fluxos do taint com status VAZAMENTO;\n    - dado inteiro encontrado nas respostas da API em funcionamento (scanner de runtime);\n    - segredos (senha, chave de API) escritos no código.\n\nUm defeito conta uma vez, mesmo que chegue a várias rotas: o CPF cru dentro de um DTO\nusado por 4 endpoints é 1 vazamento de CPF, e o relatório mostra as 4 rotas. Se o mesmo\nponto vaza dois dados (telefone e dependência no mesmo log), cada dado conta.\n\nNão entram em S (aparecem no relatório, à parte): fluxos SANITIZADOS, exposições aceitas,\ndados fictícios declarados e dado pessoal escrito no código que não seja segredo.",
   "excecoes": {
@@ -811,8 +811,8 @@
           "fim": 315,
           "arquivo": "api-csharp/src/LuzVital.Api/LuzVital.Api.http",
           "contexto": null,
-          "status": "ACHADO",
-          "motivo": null
+          "status": "FICTICIO_DECLARADO",
+          "motivo": "Dado fictício declarado (seed e arquivo de exemplo da API)."
         },
         {
           "regra": "saude",
@@ -826,8 +826,8 @@
           "fim": 380,
           "arquivo": "api-csharp/src/LuzVital.Api/LuzVital.Api.http",
           "contexto": null,
-          "status": "ACHADO",
-          "motivo": null
+          "status": "FICTICIO_DECLARADO",
+          "motivo": "Dado fictício declarado (seed e arquivo de exemplo da API)."
         },
         {
           "regra": "telefone",
@@ -986,8 +986,8 @@
         "fluxos_sanitizados": 18,
         "exposicoes_aceitas": 2,
         "fluxos_aceitos": 5,
-        "achados_codigo": 2,
-        "ficticios": 12,
+        "achados_codigo": 0,
+        "ficticios": 14,
         "runtime_vazamentos": 0
       },
       "por_categoria": {
@@ -1009,15 +1009,15 @@
           "vazamentos": 0,
           "aceitas": 0,
           "sanitizados": 4,
-          "codigo": 1,
-          "ficticios": 4
+          "codigo": 0,
+          "ficticios": 5
         },
         "saúde": {
           "vazamentos": 0,
           "aceitas": 5,
           "sanitizados": 0,
-          "codigo": 1,
-          "ficticios": 0
+          "codigo": 0,
+          "ficticios": 1
         },
         "segredo": {
           "vazamentos": 0,
@@ -1628,36 +1628,6 @@
     "modelo": null,
     "motivo": "ANTHROPIC_API_KEY não configurada",
     "itens": [
-      {
-        "id": "1.1",
-        "alvo": "api-csharp/src",
-        "regra": "endereco",
-        "rotulo": "Endereço",
-        "categoria": "localização",
-        "onde": "código",
-        "local": "api-csharp/src/LuzVital.Api/LuzVital.Api.http:14",
-        "caminho": "",
-        "trecho": "Rua ***, nº ***",
-        "com_saude": false,
-        "alerta_cidadao": "O endereço de quem depende de energia em casa estava escrito no código do sistema, que fica publicado no GitHub. Qualquer pessoa que abrisse o repositório saberia onde ela mora.",
-        "correcao_tecnica": "Troque o valor por um dado fictício já declarado em cyber/pii/ficticios.py, ou tire-o do código.",
-        "origem_texto": "modelo offline"
-      },
-      {
-        "id": "1.2",
-        "alvo": "api-csharp/src",
-        "regra": "saude",
-        "rotulo": "Dado de saúde",
-        "categoria": "saúde",
-        "onde": "código",
-        "local": "api-csharp/src/LuzVital.Api/LuzVital.Api.http:16",
-        "caminho": "",
-        "trecho": "Oxi***",
-        "com_saude": false,
-        "alerta_cidadao": "O tipo de aparelho de saúde de quem depende de energia em casa estava escrito no código do sistema, que fica publicado no GitHub. Qualquer pessoa que abrisse o repositório saberia que ela depende de um aparelho para viver e fica vulnerável quando a luz cai.",
-        "correcao_tecnica": "Troque o valor por um dado fictício já declarado em cyber/pii/ficticios.py, ou tire-o do código.",
-        "origem_texto": "modelo offline"
-      },
       {
         "id": "2.1",
         "alvo": "cyber/exemplos/vulneravel",

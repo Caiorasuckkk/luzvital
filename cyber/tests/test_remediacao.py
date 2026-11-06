@@ -52,7 +52,7 @@ def test_online_manda_so_o_achado_mascarado(monkeypatch):
     resposta = json.dumps({"itens": [{"id": "1.1", "alerta_cidadao": "A", "correcao_tecnica": "B"}]})
     monkeypatch.setitem(sys.modules, "anthropic", _cliente_falso(registro, resposta))
     monkeypatch.setenv("ANTHROPIC_API_KEY", "teste")
-    monkeypatch.setenv("LUZVITAL_MODELO", "claude-opus-5-5")
+    monkeypatch.delenv("LUZVITAL_MODELO", raising=False)
 
     item = {**ITEM, "campo_extra_que_nao_pode_sair": "11987654321"}
     r = remediacao.remediar([item])
@@ -61,8 +61,8 @@ def test_online_manda_so_o_achado_mascarado(monkeypatch):
     enviado = registro[0]["messages"][0]["content"]
     assert "11987654321" not in enviado and "campo_extra" not in enviado
     assert "(11) *****-4321" in enviado
-    assert registro[0]["model"] == "claude-opus-5-5"
-    assert registro[0]["fallbacks"] == "default"
+    assert registro[0]["model"] == "claude-haiku-5-5"  # padrão sem LUZVITAL_MODELO
+    assert "fallbacks" not in registro[0] and "betas" not in registro[0]
 
 
 def test_erro_da_api_cai_no_offline(monkeypatch):

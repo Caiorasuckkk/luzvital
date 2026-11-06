@@ -5,12 +5,11 @@ Para cada achado, gera:
     correcao_tecnica   o que o desenvolvedor deve mudar no código
 
 Modo online: API da Anthropic (pacote `anthropic`). Chave em ANTHROPIC_API_KEY,
-modelo em LUZVITAL_MODELO (padrão: claude-opus-5-5). Nos modelos que aceitam, o
-pedido vai com `fallbacks: "default"`: se o modelo recusar por política, a própria
-API refaz o pedido em outro modelo.
+modelo em LUZVITAL_MODELO (padrão: claude-haiku-5-5).
 
-Modo offline: sem chave, sem o pacote ou com erro na API, usa os textos-modelo de
-textos_offline.py. O relatório diz qual modo foi usado e por quê.
+Modo offline: sem chave, sem o pacote, com erro na API ou com recusa do modelo, usa
+os textos-modelo de textos_offline.py. Não há nova tentativa em outro modelo. O
+relatório diz qual modo foi usado e por quê.
 
 Proteção do dado: o que vai para o modelo é montado a partir de uma lista fixa de
 campos (tipo do dado, onde saiu, arquivo:linha, caminho no código e o trecho JÁ
@@ -26,9 +25,9 @@ import os
 from cyber.ia import textos_offline
 from cyber.pii import regras as pii
 
-MODELO_PADRAO = "claude-opus-5-5"
-MODELOS_COM_FALLBACK = {"claude-fable-5-1", "claude-opus-5-5", "claude-opus-5", "claude-sonnet-5-5"}
-MODELOS_COM_EFFORT = MODELOS_COM_FALLBACK | {"claude-haiku-5-5", "claude-fable-5", "claude-sonnet-5", "claude-opus-4-8"}
+MODELO_PADRAO = "claude-haiku-5-5"
+MODELOS_COM_EFFORT = {"claude-haiku-5-5", "claude-sonnet-5-5", "claude-sonnet-5", "claude-opus-5-5", "claude-opus-5",
+                      "claude-opus-4-8", "claude-fable-5-1", "claude-fable-5"}
 
 CAMPOS_PERMITIDOS = ("id", "regra", "rotulo", "categoria", "onde", "local", "caminho", "trecho", "com_saude")
 
@@ -113,12 +112,7 @@ def remediar(itens: list[dict]) -> dict:
 
     client = anthropic.Anthropic()
     try:
-        if modelo in MODELOS_COM_FALLBACK:
-            resposta = client.beta.messages.create(
-                **pedido, betas=["server-side-fallback-2026-07-01"], fallbacks="default",
-            )
-        else:
-            resposta = client.messages.create(**pedido)
+        resposta = client.messages.create(**pedido)
     except anthropic.AuthenticationError:
         return _offline(itens, "chave da Anthropic inválida", modelo)
     except anthropic.PermissionDeniedError:
