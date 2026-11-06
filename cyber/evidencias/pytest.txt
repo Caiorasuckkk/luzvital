@@ -1,0 +1,36 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.8, pytest-9.2.0, pluggy-1.7.0 -- C:\Users\caior\GS-C#\luzvital\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\caior\GS-C#\luzvital
+plugins: anyio-4.16.0
+collecting ... collected 27 items
+
+cyber/tests/test_indice.py::test_sem_vazamento_da_zero_baixo PASSED      [  3%]
+cyber/tests/test_indice.py::test_valores_da_tabela_do_readme PASSED      [  7%]
+cyber/tests/test_indice.py::test_mesmo_defeito_conta_uma_vez PASSED      [ 11%]
+cyber/tests/test_indice.py::test_nunca_passa_de_100 PASSED               [ 14%]
+cyber/tests/test_regras.py::test_cpf_valido_com_e_sem_pontuacao PASSED   [ 18%]
+cyber/tests/test_regras.py::test_cpf_invalido_nao_e_achado PASSED        [ 22%]
+cyber/tests/test_regras.py::test_cpf_ja_mascarado_e_ignorado PASSED      [ 25%]
+cyber/tests/test_regras.py::test_telefone_inteiro_e_mascarado PASSED     [ 29%]
+cyber/tests/test_regras.py::test_endereco_email_cep PASSED               [ 33%]
+cyber/tests/test_regras.py::test_termos_de_saude PASSED                  [ 37%]
+cyber/tests/test_regras.py::test_saude_no_cs_so_vale_em_string_e_comentario PASSED [ 40%]
+cyber/tests/test_regras.py::test_segredos_no_codigo PASSED               [ 44%]
+cyber/tests/test_regras.py::test_ficticio_vale_so_no_arquivo_declarado PASSED [ 48%]
+cyber/tests/test_regras.py::test_outro_valor_no_arquivo_declarado_continua_achado PASSED [ 51%]
+cyber/tests/test_regras.py::test_achado_nunca_carrega_o_valor_inteiro PASSED [ 55%]
+cyber/tests/test_remediacao.py::test_sem_chave_cai_no_offline PASSED     [ 59%]
+cyber/tests/test_remediacao.py::test_online_manda_so_o_achado_mascarado PASSED [ 62%]
+cyber/tests/test_remediacao.py::test_erro_da_api_cai_no_offline PASSED   [ 66%]
+cyber/tests/test_remediacao.py::test_payload_com_dado_inteiro_nao_e_enviado PASSED [ 70%]
+cyber/tests/test_taint.py::test_exemplo_vulneravel_tem_os_tres_vazamentos PASSED [ 74%]
+cyber/tests/test_taint.py::test_api_real_tem_zero_vazamentos PASSED      [ 77%]
+cyber/tests/test_taint.py::test_api_real_so_tem_as_duas_exposicoes_aceitas PASSED [ 81%]
+cyber/tests/test_taint.py::test_dto_de_resposta_sanitiza_cpf_telefone_e_endereco PASSED [ 85%]
+cyber/tests/test_taint.py::test_log_sem_mascara_e_vazamento PASSED       [ 88%]
+cyber/tests/test_taint.py::test_log_com_mascara_e_sanitizado PASSED      [ 92%]
+cyber/tests/test_taint.py::test_destinatario_da_notificacao_nao_conta_como_saida PASSED [ 96%]
+cyber/tests/test_taint.py::test_mensagem_de_excecao_com_endereco PASSED  [100%]
+
+============================= 27 passed in 0.58s ==============================

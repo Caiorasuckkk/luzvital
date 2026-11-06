@@ -1,0 +1,24 @@
+{
+  "aviso": "A API não tem autenticação: qualquer pessoa pode listar quem usa oxigênio em cada bairro.",
+  "recomendacao": "Colocar autenticação (JWT) e perfil de acesso na API: coordenador, voluntário e cidadão. A dependência só deve sair para o voluntário daquele bairro, e só durante um alerta ativo; para os outros perfis, a resposta devolve apenas \"prioritário: sim/não\". Na prática: [Authorize] nos controllers, uma policy que compara o bairro do voluntário com o do cidadão, e um DTO de resposta sem o campo Dependencia para quem não passar na policy.",
+  "excecoes": [
+    {
+      "id": "dependencia-cadastro",
+      "titulo": "Dependência na resposta do cadastro de cidadãos",
+      "campo": "Dependencia",
+      "via": "CidadaoResponse.De",
+      "endpoints": ["/api/cidadaos"],
+      "campo_json": "dependencia",
+      "motivo": "Finalidade de cuidado: o voluntário precisa saber se a pessoa usa oxigênio, insulina ou cadeira motorizada para decidir quem checar primeiro e o que levar."
+    },
+    {
+      "id": "dependencia-painel",
+      "titulo": "Dependência no painel de quem falta checar",
+      "campo": "Dependencia",
+      "via": "new CidadaoPendente",
+      "endpoints": ["/api/painel/sem-checkin"],
+      "campo_json": "dependencia",
+      "motivo": "Finalidade de cuidado: durante o apagão, o coordenador ordena as visitas pelo tipo de equipamento e pela autonomia de cada pessoa."
+    }
+  ]
+}

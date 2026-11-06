@@ -1,0 +1,177 @@
+Luz Vital · fluxos do taint analysis
+
+== api-csharp/src  ·  índice 0 (baixo)  ·  0 fluxos de vazamento (0 defeitos), 5 exposições aceitas, 18 sanitizados
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:24
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:32  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Dependencia → new(...) → Ok(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:38
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:39  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Dependencia → new(...) → Ok(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:46
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:58  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Dependencia → new Cidadao(...) → cidadao → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Dependencia → new(...) → CreatedAtAction(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:65
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:73  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Dependencia → new(...) → Ok(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Infrastructure/Servicos/ServicoPainel.cs:31
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/PainelController.cs:20  (Ok)
+      caminho    _db.Cidadaos → query → c.Dependencia → new CidadaoPendente(...) → ServicoPainel.CidadaosSemCheckInAsync (api-csharp/src/LuzVital.Infrastructure/Servicos/ServicoPainel.cs:25) → Ok(...) [resposta HTTP]
+  [SANITIZADO] CPF · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:24
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:32  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Cpf → Cpf.Mascarar → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:24
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:32  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:24
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:32  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22): campo não exposto → Ok(...) [resposta HTTP]
+  [SANITIZADO] CPF · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:38
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:39  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Cpf → Cpf.Mascarar → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:38
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:39  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:38
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:39  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22): campo não exposto → Ok(...) [resposta HTTP]
+  [SANITIZADO] CPF · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:46
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:58  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Cpf → new Cidadao(...) → cidadao → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Cpf → Cpf.Mascarar → CreatedAtAction(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:46
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:58  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Telefone → new Cidadao(...) → cidadao → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → CreatedAtAction(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:46
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:58  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Endereco → new Cidadao(...) → cidadao → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22): campo não exposto → CreatedAtAction(...) [resposta HTTP]
+  [SANITIZADO] CPF · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:65
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:73  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Cpf → Cpf.Mascarar → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:65
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:73  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:65
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/CidadaosController.cs:73  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:22): campo não exposto → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:22
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:30  (Ok)
+      caminho    _db.Voluntarios → query → lista → VoluntarioResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:37) → parâmetro v (Voluntario) → v.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:36
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:37  (Ok)
+      caminho    _db.Voluntarios → v → VoluntarioResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:37) → parâmetro v (Voluntario) → v.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:42
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:47  (CreatedAtAction)
+      caminho    parâmetro req (VoluntarioRequest) → req.Telefone → new Voluntario(...) → v → VoluntarioResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:37) → parâmetro v (Voluntario) → v.Telefone → Mascara.Telefone → CreatedAtAction(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:54
+      sorvedouro api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:60  (Ok)
+      caminho    _db.Voluntarios → v → VoluntarioResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:37) → parâmetro v (Voluntario) → v.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · log
+      fonte      api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:20
+      sorvedouro api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:23  (_logger.LogInformation)
+      caminho    parâmetro destinatario (Pessoa) → destinatario.Telefone → Mascara.Telefone → _logger.LogInformation(...) [log]
+  [SANITIZADO] Telefone · log
+      fonte      api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:37
+      sorvedouro api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:40  (_logger.LogInformation)
+      caminho    parâmetro destinatario (Pessoa) → destinatario.Telefone → Mascara.Telefone → _logger.LogInformation(...) [log]
+
+== cyber/exemplos/vulneravel  ·  índice 65 (alto)  ·  7 fluxos de vazamento (4 defeitos), 4 exposições aceitas, 9 sanitizados
+  [VAZAMENTO] CPF · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:27
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:35  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Cpf → new(...) → Ok(...) [resposta HTTP]
+  [VAZAMENTO] CPF · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:41
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:42  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Cpf → new(...) → Ok(...) [resposta HTTP]
+  [VAZAMENTO] Endereço · exceção
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:49
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:52  (newDomainException)
+      caminho    parâmetro req (CidadaoRequest) → req.Endereco → newDomainException(...) [exceção]
+  [VAZAMENTO] CPF · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:49
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:64  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Cpf → new Cidadao(...) → cidadao → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Cpf → new(...) → CreatedAtAction(...) [resposta HTTP]
+  [VAZAMENTO] CPF · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:71
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:79  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Cpf → new(...) → Ok(...) [resposta HTTP]
+  [VAZAMENTO] Telefone · log
+      fonte      cyber/exemplos/vulneravel/NotificadoresSimulados.cs:22
+      sorvedouro cyber/exemplos/vulneravel/NotificadoresSimulados.cs:28  (_logger.LogInformation)
+      caminho    parâmetro destinatario (Pessoa) → destinatario.Telefone → _logger.LogInformation(...) [log]
+  [VAZAMENTO] Dado de saúde · log
+      fonte      cyber/exemplos/vulneravel/NotificadoresSimulados.cs:22
+      sorvedouro cyber/exemplos/vulneravel/NotificadoresSimulados.cs:28  (_logger.LogInformation)
+      caminho    parâmetro destinatario (Pessoa) → destinatario is Cidadao cidadao → cidadao.Dependencia → _logger.LogInformation(...) [log]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:27
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:35  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Dependencia → new(...) → Ok(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:41
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:42  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Dependencia → new(...) → Ok(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:49
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:64  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Dependencia → new Cidadao(...) → cidadao → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Dependencia → new(...) → CreatedAtAction(...) [resposta HTTP]
+  [EXPOSICAO_ACEITA] Dado de saúde · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:71
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:79  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Dependencia → new(...) → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:27
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:35  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:27
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:35  (Ok)
+      caminho    _db.Cidadaos → query → lista → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23): campo não exposto → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:41
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:42  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:41
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:42  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23): campo não exposto → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:49
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:64  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Telefone → new Cidadao(...) → cidadao → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → CreatedAtAction(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:49
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:64  (CreatedAtAction)
+      caminho    parâmetro req (CidadaoRequest) → req.Endereco → new Cidadao(...) → cidadao → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23): campo não exposto → CreatedAtAction(...) [resposta HTTP]
+  [SANITIZADO] Telefone · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:71
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:79  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
+  [SANITIZADO] Endereço · resposta HTTP
+      fonte      cyber/exemplos/vulneravel/CidadaosController.cs:71
+      sorvedouro cyber/exemplos/vulneravel/CidadaosController.cs:79  (Ok)
+      caminho    _db.Cidadaos → c → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23): campo não exposto → Ok(...) [resposta HTTP]
+  [SANITIZADO] Telefone · log
+      fonte      cyber/exemplos/vulneravel/NotificadoresSimulados.cs:43
+      sorvedouro cyber/exemplos/vulneravel/NotificadoresSimulados.cs:46  (_logger.LogInformation)
+      caminho    parâmetro destinatario (Pessoa) → destinatario.Telefone → Mascara.Telefone → _logger.LogInformation(...) [log]

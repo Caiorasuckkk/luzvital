@@ -21,3 +21,7 @@ __pycache__/
 .venv/
 
 .DS_Store
+
+# Cyber
+cyber/entrega/
+.pytest_cache/
