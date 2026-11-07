@@ -56,7 +56,7 @@ footer{margin-top:40px;color:var(--tinta2);font-size:13px}
 <body>
 <main>
 <h1>Luz Vital · Índice de Risco Cidadão</h1>
-<p class="sub">Gerado em 06/11/2026 16:11 · <code>python -m cyber.analisar --alvo api-csharp/src --alvo cyber/exemplos/vulneravel</code></p>
+<p class="sub">Gerado em 06/11/2026 16:32 · <code>python -m cyber.analisar --alvo api-csharp/src --alvo cyber/exemplos/vulneravel</code></p>
 <p class="sub">Todos os dados das telas e do código são fictícios. Nenhum valor aparece inteiro neste relatório.</p>
 
 <h2 id="comparacao">Comparação lado a lado</h2>
@@ -121,31 +121,31 @@ mas registrados aqui com o motivo (cyber/taint/excecoes.json).</p>
 
 
 <h2 id="alertas">Alertas em linguagem simples (IA na remediação)</h2>
-<div class="modo">Modo offline: textos-modelo por tipo de achado. Motivo: ANTHROPIC_API_KEY não configurada.</div>
+<div class="modo">Textos gerados pela IA (modo online, modelo claude-haiku-5-5). Só achados mascarados foram enviados.</div>
 <div class="alertas" style="margin-top:12px">
 <div class="cartao alerta">
-  <p class="cidadao">O CPF de quem depende de energia em casa saía inteiro na resposta da API. Qualquer pessoa que chamasse a API poderia usar o documento em golpes e cadastros falsos.</p>
-  <p class="tecnica"><b>Correção:</b> No DTO de resposta, troque c.Cpf por Cpf.Mascarar(c.Cpf) e renomeie o campo para CpfMascarado.</p>
+  <p class="cidadao">Seu CPF aparecia nas respostas do sistema, onde pode ser visto por quem tiver acesso a elas. Com ele, alguém poderia tentar se passar por você.</p>
+  <p class="tecnica"><b>Correção:</b> Em CidadaoResponse.De (Dtos.cs:23), remova o campo Cpf do DTO de resposta ou substitua-o por Cpf.Mascarar(c.Cpf) antes de montar o new(...) usado em Ok(...).</p>
   <div class="meta">cyber/exemplos/vulneravel · CPF · resposta HTTP · <span class="mono">CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23)</span>
-   · texto: modelo offline</div>
+   · texto: IA (claude-haiku-5-5)</div>
 </div>
 <div class="cartao alerta">
-  <p class="cidadao">O endereço de quem depende de energia em casa aparecia na mensagem de erro, que vai para a tela do app e para o registro do servidor. Quem visse o erro ou lesse os logs saberia onde ela mora.</p>
-  <p class="tecnica"><b>Correção:</b> Tire o endereço da mensagem da exceção. Use uma mensagem fixa (&quot;Bairro é obrigatório.&quot;) e, para rastrear, logue só o Id do cadastro.</p>
+  <p class="cidadao">Seu endereço aparecia em uma mensagem de erro do sistema, que pode ser registrada e lida por outras pessoas. Isso revela onde você mora, inclusive se usa aparelhos que dependem de energia.</p>
+  <p class="tecnica"><b>Correção:</b> Em CidadaoesController.cs:52, não inclua req.Endereco na mensagem da DomainException; use uma mensagem genérica e, se precisar identificar o caso, use apenas o id do cadastro.</p>
   <div class="meta">cyber/exemplos/vulneravel · Endereço · exceção · <span class="mono">cyber/exemplos/vulneravel/CidadaosController.cs:52</span>
-   · texto: modelo offline</div>
+   · texto: IA (claude-haiku-5-5)</div>
 </div>
 <div class="cartao alerta">
-  <p class="cidadao">O telefone de quem usa aparelho de saúde em casa aparecia no registro do servidor. Qualquer pessoa com acesso aos logs poderia ligar para ela.</p>
-  <p class="tecnica"><b>Correção:</b> Use Mascara.Telefone(...) antes de logar: _logger.LogInformation(&quot;... {Telefone}&quot;, Mascara.Telefone(destinatario.Telefone)).</p>
+  <p class="cidadao">Seu telefone era gravado nos registros do servidor a cada aviso enviado. Qualquer pessoa com acesso a esses registros poderia ligar para você.</p>
+  <p class="tecnica"><b>Correção:</b> Em NotificadoresSimulados.cs:28, não passe destinatario.Telefone para _logger.LogInformation; registre apenas um identificador interno ou use Mascara.Telefone(destinatario.Telefone).</p>
   <div class="meta">cyber/exemplos/vulneravel · Telefone · log · <span class="mono">cyber/exemplos/vulneravel/NotificadoresSimulados.cs:28</span>
-   · texto: modelo offline</div>
+   · texto: IA (claude-haiku-5-5)</div>
 </div>
 <div class="cartao alerta">
-  <p class="cidadao">O tipo de aparelho de saúde de quem depende de energia em casa aparecia no registro do servidor. Qualquer pessoa com acesso aos logs saberia que ela depende de um aparelho para viver e fica vulnerável quando a luz cai.</p>
-  <p class="tecnica"><b>Correção:</b> Não registre a dependência no log. Registre só o Id da pessoa e, se precisar, &quot;prioritário: sim/não&quot;.</p>
+  <p class="cidadao">Os registros do servidor guardavam que você depende de equipamento de saúde ligado à energia. Quem tivesse acesso a eles saberia que sua casa tem uma situação de risco.</p>
+  <p class="tecnica"><b>Correção:</b> Em NotificadoresSimulados.cs:28, remova cidadao.Dependencia do log do destinatario is Cidadao; registre somente um código neutro, como o id do cadastro, sem informação de saúde.</p>
   <div class="meta">cyber/exemplos/vulneravel · Dado de saúde · log · <span class="mono">cyber/exemplos/vulneravel/NotificadoresSimulados.cs:28</span>
-   · texto: modelo offline</div>
+   · texto: IA (claude-haiku-5-5)</div>
 </div></div>
 
 <h2 id="taint">Fluxos do taint analysis</h2>

@@ -10,6 +10,10 @@ O resultado vira o **Índice de Risco Cidadão** (0 a 100), mostrado num dashboa
 
 Todos os dados usados são fictícios (o seed da API). Nenhum relatório deste módulo imprime um dado inteiro.
 
+## Vídeo
+
+https://youtu.be/seKUeEGIqPk
+
 ## Como rodar
 
 Precisa de Python 3.10 ou mais novo. Os comandos são rodados da raiz do repositório (`luzvital/`).
@@ -173,4 +177,6 @@ Os testes em `tests/test_taint.py` garantem os dois lados: o exemplo vulnerável
 | `saida/relatorio.html` | Dashboard com o índice dos dois alvos lado a lado |
 | `saida/fluxos-taint.txt` | Todos os fluxos do taint, com fonte, sorvedouro e caminho |
 | `saida/achados.json` | Dados completos da análise |
-| `evidencias/` | Saída dos testes e da análise, prints e vídeo do dashboard |
+| `evidencias/` | Saída dos testes e da análise |
+| `evidencias/prints/` | Prints do dashboard (comparação, alertas da IA, taint, exposições aceitas, runtime, fórmula) |
+| Vídeo | https://youtu.be/seKUeEGIqPk |

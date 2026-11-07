@@ -1,5 +1,5 @@
 {
-  "gerado_em": "06/11/2026 16:11",
+  "gerado_em": "06/11/2026 16:32",
   "comando": "python -m cyber.analisar --alvo api-csharp/src --alvo cyber/exemplos/vulneravel",
   "formula": "Índice de Risco Cidadão (0 a 100).\n\n    peso   = severidade da regra (1 a 5) × fator da categoria\n    fator  = saúde 2,0 · segredo 1,5 · identificação, contato e localização 1,0\n    S      = soma dos pesos dos vazamentos não sanitizados\n    Índice = arredonda( 100 × (1 − e^(−S/20)) )\n    Faixa  = 0–29 baixo · 30–59 médio · 60–100 alto\n\nEntram em S:\n    - fluxos do taint com status VAZAMENTO;\n    - dado inteiro encontrado nas respostas da API em funcionamento (scanner de runtime);\n    - segredos (senha, chave de API) escritos no código.\n\nUm defeito conta uma vez, mesmo que chegue a várias rotas: o CPF cru dentro de um DTO\nusado por 4 endpoints é 1 vazamento de CPF, e o relatório mostra as 4 rotas. Se o mesmo\nponto vaza dois dados (telefone e dependência no mesmo log), cada dado conta.\n\nNão entram em S (aparecem no relatório, à parte): fluxos SANITIZADOS, exposições aceitas,\ndados fictícios declarados e dado pessoal escrito no código que não seja segredo.",
   "excecoes": {
@@ -1624,9 +1624,9 @@
     }
   ],
   "remediacao": {
-    "modo": "offline",
-    "modelo": null,
-    "motivo": "ANTHROPIC_API_KEY não configurada",
+    "modo": "online",
+    "modelo": "claude-haiku-5-5",
+    "motivo": null,
     "itens": [
       {
         "id": "2.1",
@@ -1639,9 +1639,9 @@
         "caminho": "_db.Cidadaos → query → lista → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Cpf → new(...) → Ok(...) [resposta HTTP]",
         "trecho": "",
         "com_saude": false,
-        "alerta_cidadao": "O CPF de quem depende de energia em casa saía inteiro na resposta da API. Qualquer pessoa que chamasse a API poderia usar o documento em golpes e cadastros falsos.",
-        "correcao_tecnica": "No DTO de resposta, troque c.Cpf por Cpf.Mascarar(c.Cpf) e renomeie o campo para CpfMascarado.",
-        "origem_texto": "modelo offline"
+        "alerta_cidadao": "Seu CPF aparecia nas respostas do sistema, onde pode ser visto por quem tiver acesso a elas. Com ele, alguém poderia tentar se passar por você.",
+        "correcao_tecnica": "Em CidadaoResponse.De (Dtos.cs:23), remova o campo Cpf do DTO de resposta ou substitua-o por Cpf.Mascarar(c.Cpf) antes de montar o new(...) usado em Ok(...).",
+        "origem_texto": "IA (claude-haiku-5-5)"
       },
       {
         "id": "2.2",
@@ -1654,9 +1654,9 @@
         "caminho": "parâmetro req (CidadaoRequest) → req.Endereco → newDomainException(...) [exceção]",
         "trecho": "",
         "com_saude": false,
-        "alerta_cidadao": "O endereço de quem depende de energia em casa aparecia na mensagem de erro, que vai para a tela do app e para o registro do servidor. Quem visse o erro ou lesse os logs saberia onde ela mora.",
-        "correcao_tecnica": "Tire o endereço da mensagem da exceção. Use uma mensagem fixa (\"Bairro é obrigatório.\") e, para rastrear, logue só o Id do cadastro.",
-        "origem_texto": "modelo offline"
+        "alerta_cidadao": "Seu endereço aparecia em uma mensagem de erro do sistema, que pode ser registrada e lida por outras pessoas. Isso revela onde você mora, inclusive se usa aparelhos que dependem de energia.",
+        "correcao_tecnica": "Em CidadaoesController.cs:52, não inclua req.Endereco na mensagem da DomainException; use uma mensagem genérica e, se precisar identificar o caso, use apenas o id do cadastro.",
+        "origem_texto": "IA (claude-haiku-5-5)"
       },
       {
         "id": "2.3",
@@ -1669,9 +1669,9 @@
         "caminho": "parâmetro destinatario (Pessoa) → destinatario.Telefone → _logger.LogInformation(...) [log]",
         "trecho": "",
         "com_saude": true,
-        "alerta_cidadao": "O telefone de quem usa aparelho de saúde em casa aparecia no registro do servidor. Qualquer pessoa com acesso aos logs poderia ligar para ela.",
-        "correcao_tecnica": "Use Mascara.Telefone(...) antes de logar: _logger.LogInformation(\"... {Telefone}\", Mascara.Telefone(destinatario.Telefone)).",
-        "origem_texto": "modelo offline"
+        "alerta_cidadao": "Seu telefone era gravado nos registros do servidor a cada aviso enviado. Qualquer pessoa com acesso a esses registros poderia ligar para você.",
+        "correcao_tecnica": "Em NotificadoresSimulados.cs:28, não passe destinatario.Telefone para _logger.LogInformation; registre apenas um identificador interno ou use Mascara.Telefone(destinatario.Telefone).",
+        "origem_texto": "IA (claude-haiku-5-5)"
       },
       {
         "id": "2.4",
@@ -1684,9 +1684,9 @@
         "caminho": "parâmetro destinatario (Pessoa) → destinatario is Cidadao cidadao → cidadao.Dependencia → _logger.LogInformation(...) [log]",
         "trecho": "",
         "com_saude": true,
-        "alerta_cidadao": "O tipo de aparelho de saúde de quem depende de energia em casa aparecia no registro do servidor. Qualquer pessoa com acesso aos logs saberia que ela depende de um aparelho para viver e fica vulnerável quando a luz cai.",
-        "correcao_tecnica": "Não registre a dependência no log. Registre só o Id da pessoa e, se precisar, \"prioritário: sim/não\".",
-        "origem_texto": "modelo offline"
+        "alerta_cidadao": "Os registros do servidor guardavam que você depende de equipamento de saúde ligado à energia. Quem tivesse acesso a eles saberia que sua casa tem uma situação de risco.",
+        "correcao_tecnica": "Em NotificadoresSimulados.cs:28, remova cidadao.Dependencia do log do destinatario is Cidadao; registre somente um código neutro, como o id do cadastro, sem informação de saúde.",
+        "origem_texto": "IA (claude-haiku-5-5)"
       }
     ]
   }

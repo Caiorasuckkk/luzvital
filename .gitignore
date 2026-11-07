@@ -25,3 +25,6 @@ __pycache__/
 # Cyber
 cyber/entrega/
 .pytest_cache/
+cyber/evidencias/luzvital-ml.mp4
+cyber/evidencias/luzvital-ml.pptx
+cyber/evidencias/evidencias-cyber.zip

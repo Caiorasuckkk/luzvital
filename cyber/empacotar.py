@@ -18,6 +18,8 @@ RAIZ_CYBER = os.path.dirname(os.path.abspath(__file__))
 DESTINO = os.path.join(RAIZ_CYBER, "entrega", "luzvital-cyber.zip")
 IGNORAR_PASTAS = {".venv", "venv", "__pycache__", ".pytest_cache", "entrega"}
 IGNORAR_EXT = {".pyc", ".pyo"}
+# Arquivos do ML e o zip de origem dos prints (já extraídos em evidencias/prints/)
+IGNORAR_ARQUIVOS = {"luzvital-ml.mp4", "luzvital-ml.pptx", "evidencias-cyber.zip"}
 
 
 def main() -> int:
@@ -33,7 +35,7 @@ def main() -> int:
         for raiz, pastas, nomes in os.walk(RAIZ_CYBER):
             pastas[:] = sorted(p for p in pastas if p not in IGNORAR_PASTAS)
             for nome in sorted(nomes):
-                if os.path.splitext(nome)[1] in IGNORAR_EXT:
+                if os.path.splitext(nome)[1] in IGNORAR_EXT or nome in IGNORAR_ARQUIVOS:
                     continue
                 caminho = os.path.join(raiz, nome)
                 interno = os.path.join("luzvital-cyber", "cyber", os.path.relpath(caminho, RAIZ_CYBER))

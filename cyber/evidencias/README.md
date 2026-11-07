@@ -6,4 +6,5 @@
 | `analisar.txt` | Saída da análise: índice de cada alvo, vazamentos, exposições aceitas e scanner de runtime |
 | `../saida/fluxos-taint.txt` | Os fluxos do taint, com fonte, sorvedouro e caminho |
 | `../saida/relatorio.html` | Dashboard Risco Cidadão |
-| prints e vídeo | Dashboard aberto no navegador, gerando o indicador de Risco Cidadão (a gravar) |
+| `prints/` | Dashboard aberto no navegador: comparação dos alvos, alertas da IA, taint, exposições aceitas, runtime, fórmula, dados no código e categorias |
+| vídeo | https://youtu.be/seKUeEGIqPk |

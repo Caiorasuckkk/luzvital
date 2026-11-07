@@ -23,13 +23,13 @@ Global Solution CitizenTech · FIAP 2026.2 · Engenharia de Software
 
 ## Partes
 
-| Pasta | Disciplina | Status |
-| --- | --- | --- |
-| `api-csharp/` | C# Software Development | Pronto |
-| `soa-java/` | SOA e Web Services | A fazer |
-| `mobile/` | Mobile Development | A fazer |
-| `ml/` | IA & Machine Learning | A fazer |
-| `cyber/` | Cybersecurity | A fazer |
-| `docs/` | Testing, Compliance & QA | A fazer |
+| Pasta | Disciplina | Status | Vídeo |
+| --- | --- | --- | --- |
+| `api-csharp/` | C# Software Development | Pronto | |
+| `soa-java/` | SOA e Web Services | A fazer | |
+| `mobile/` | Mobile Development | A fazer | |
+| [luzvital-ml](https://github.com/Caiorasuckkk/luzvital-ml) | IA & Machine Learning | Pronto | https://youtu.be/a17KP1B8xQU |
+| `cyber/` | Cybersecurity | Pronto | https://youtu.be/seKUeEGIqPk |
+| `docs/` | Testing, Compliance & QA | A fazer | |
 
-Dados: tudo o que aparece como pessoa no sistema é fictício. As bases do ML são públicas (INMET e ANEEL) e a fonte de cada uma está em `ml/dados/README.md`.
+Dados: tudo o que aparece como pessoa no sistema é fictício. As bases do ML são públicas (INMET e ANEEL) e a fonte de cada uma está em [`dados/README.md` do luzvital-ml](https://github.com/Caiorasuckkk/luzvital-ml/blob/main/dados/README.md).
