@@ -203,13 +203,13 @@ def main(argv: list[str] | None = None) -> int:
         f.write(_texto_fluxos(alvos))
 
     print()
-    print("Luz Vital · Índice de Risco Cidadão")
+    print("Luz Vital - Índice de Risco Cidadão")
     for a in alvos:
         c = a["contagens"]
         print(f"  {a['alvo']}")
-        print(f"    índice {a['indice']}/100 ({a['faixa']})  ·  vazamentos: {c['vazamentos_unicos']} defeitos em "
-              f"{c['fluxos_vazamento']} fluxos  ·  exposições aceitas: {c['exposicoes_aceitas']} "
-              f"({c['fluxos_aceitos']} fluxos)  ·  sanitizados: {c['fluxos_sanitizados']}")
+        print(f"    índice {a['indice']}/100 ({a['faixa']}), vazamentos: {c['vazamentos_unicos']} defeitos em "
+              f"{c['fluxos_vazamento']} fluxos, exposições aceitas: {c['exposicoes_aceitas']} "
+              f"({c['fluxos_aceitos']} fluxos), sanitizados: {c['fluxos_sanitizados']}")
         if a.get("runtime"):
             rt = a["runtime"]
             if rt["no_ar"]:

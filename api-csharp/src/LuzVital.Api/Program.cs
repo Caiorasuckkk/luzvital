@@ -14,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<LuzVitalDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("LuzVital") ?? "Data Source=luzvital.db"));
 
-// Injeção de dependência
 builder.Services.AddScoped<IServicoAlertas, ServicoAlertas>();
 builder.Services.AddScoped<IServicoPainel, ServicoPainel>();
 builder.Services.AddSingleton<IRelogio, RelogioSistema>();

@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import re
 
-# Tipo -> propriedades sensíveis que ele carrega
+# Propriedades sensíveis que cada tipo carrega
 FONTES_TIPOS: dict[str, list[str]] = {
     "Cidadao": ["Cpf", "Telefone", "Endereco", "Dependencia"],
     "CidadaoRequest": ["Cpf", "Telefone", "Endereco", "Dependencia"],
@@ -34,12 +34,11 @@ FONTES_TIPOS: dict[str, list[str]] = {
     "VoluntarioRequest": ["Telefone"],
 }
 
-# DbSet -> tipo da entidade
 COLECOES: dict[str, str] = {"Cidadaos": "Cidadao", "Voluntarios": "Voluntario", "Pessoas": "Pessoa"}
 
 CAMPOS = {"Cpf", "Telefone", "Endereco", "Dependencia"}
 
-# Propriedade -> regra do motor PII (dá severidade e categoria para o índice)
+# Regra do motor PII de cada propriedade: dá severidade e categoria para o índice
 CAMPO_REGRA = {"Cpf": "cpf", "Telefone": "telefone", "Endereco": "endereco", "Dependencia": "saude"}
 
 SANITIZADORES = re.compile(r"\b(Cpf\.Mascarar|Mascara\.\w+)\s*\(")

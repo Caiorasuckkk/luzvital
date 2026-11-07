@@ -1,36 +1,19 @@
 """Taint analysis estático, baseado em texto, para os .cs da API.
 
-Como funciona
--------------
-1. Cada .cs vira uma lista de métodos (com classe, parâmetros e corpo). Comentários
-   são apagados antes; strings são respeitadas para não confundir '{', '}' e ';'.
-2. O corpo de cada método é quebrado em comandos (por ';', '{' e '}' fora de
-   parênteses e de strings) e percorrido em ordem, guardando quais variáveis estão
-   contaminadas e por quais campos (Cpf, Telefone, Endereco, Dependencia).
-3. Cada expressão é avaliada em camadas:
-      a. `.Select(...)` no fim da cadeia: o resultado é só o que o Select projeta;
-      b. sanitizadores (Cpf.Mascarar, Mascara.*): o que passa por eles sai SANITIZADO;
-      c. chamadas a métodos com resumo (ver abaixo);
-      d. `new Tipo(...)` / `new { ... }`: o que entra nos argumentos sai no objeto;
-      e. identificadores: `x.Cpf` dá o campo Cpf de x; `x` sozinho dá todos os campos;
-         `x.Where(...)`/`x.ToList()` passam tudo adiante; `x.Id`, `x.Nome()` não passam nada.
-4. Quando um comando contém um sorvedouro, os argumentos dele são avaliados e cada
-   campo que chega vira um fluxo: SANITIZADO, VAZAMENTO ou EXPOSICAO_ACEITA (excecoes.json).
+Cada método é quebrado em comandos e percorrido em ordem, guardando quais variáveis
+carregam Cpf, Telefone, Endereco ou Dependencia. Cada expressão é avaliada em camadas:
+(a) `.Select(...)` no fim da cadeia, (b) sanitizadores, (c) chamadas com resumo,
+(d) `new Tipo(...)` e (e) identificadores. Quando um comando tem um sorvedouro, cada
+campo que chega nele vira um fluxo SANITIZADO, VAZAMENTO ou EXPOSICAO_ACEITA.
 
-Resumo de método
-----------------
-A regra é seguir o dado dentro do mesmo método. Para os DTOs funcionarem como
-sanitizadores, e para o painel (o dado nasce no serviço e sai no controller), há um
-passo a mais: antes da análise final, cada método ganha um "resumo" do que ele devolve
-(campo por campo, cru ou mascarado). Uma chamada `CidadaoResponse.De(c)` usa esse resumo.
-O resumo é por nome (Classe.Metodo, ou só Metodo quando é único), não por tipo: é uma
-aproximação, documentada como tal.
+Resumo de método: antes da análise final, cada método ganha um resumo do que devolve
+(campo por campo, cru ou mascarado). É isso que faz os DTOs funcionarem como
+sanitizadores e liga o serviço ao controller no painel. O resumo é por nome
+(Classe.Metodo, ou só Metodo quando é único), não por tipo: é uma aproximação.
 
-Limites conhecidos
-------------------
-- Não resolve tipos, herança, sobrecarga nem injeção de dependência.
-- Não segue o dado por campos de classe, eventos ou banco de dados.
-- Método chamado sem resumo passa adiante o que recebeu (postura conservadora).
+Limites: não resolve tipos, herança, sobrecarga nem injeção de dependência; não segue
+o dado por campos de classe, eventos ou banco. Método sem resumo passa adiante o que
+recebeu (postura conservadora).
 """
 
 from __future__ import annotations
@@ -50,8 +33,6 @@ EXPOSICAO_ACEITA = "EXPOSICAO_ACEITA"
 
 CAMINHO_EXCECOES = os.path.join(os.path.dirname(__file__), "excecoes.json")
 
-
-# ---------------------------------------------------------------- estruturas
 
 @dataclass(frozen=True)
 class Marca:
@@ -110,8 +91,6 @@ class Fluxo:
     def para_dict(self) -> dict:
         return asdict(self)
 
-
-# ---------------------------------------------------------------- utilidades de texto
 
 def _casar(texto: str, i: int, em_string: list[bool] | None = None) -> int:
     """i aponta para '(', '[' ou '{'. Devolve o índice do fechamento correspondente."""
@@ -180,8 +159,6 @@ def _tipo_fonte(tipo: str) -> str | None:
             return palavra
     return None
 
-
-# ---------------------------------------------------------------- leitura dos arquivos
 
 _RE_TIPO = re.compile(r"\b(class|record|struct|interface)\s+(\w+)")
 _RE_METODO = re.compile(
@@ -309,16 +286,12 @@ def _comandos(metodo: Metodo) -> list[tuple[int, str]]:
     return comandos
 
 
-# ---------------------------------------------------------------- analisador
-
 class Analisador:
     def __init__(self, metodos: list[Metodo], excecoes: list[dict] | None = None):
         self.metodos = metodos
         self.resumos: dict[str, Resumo] = {}
         self.excecoes = excecoes if excecoes is not None else carregar_excecoes()["excecoes"]
         self._nomes_unicos: dict[str, str] = {}
-
-    # -------- resumo
 
     def _resumo(self, qualificador: str | None, nome: str) -> Resumo | None:
         if qualificador and f"{qualificador}.{nome}" in self.resumos:
@@ -350,8 +323,6 @@ class Analisador:
                 if a.campo not in expostos and not a.sanitizado:
                     saida.append(replace(a, sanitizado=True, caminho=a.caminho + (f"{rotulo}: campo não exposto",)))
         return saida
-
-    # -------- avaliação de expressões
 
     def avaliar(self, expr: str, estado: dict[str, list[Marca]], metodo: Metodo, linha: int) -> list[Marca]:
         expr = expr.strip()
@@ -478,8 +449,6 @@ class Analisador:
         fecha = _casar(expr, abre, em_str)
         return expr[:ponto], expr[abre + 1:fecha]
 
-    # -------- análise de um método
-
     def analisar_metodo(self, metodo: Metodo, coletar: bool) -> tuple[list[Marca], list[Fluxo]]:
         estado: dict[str, list[Marca]] = {}
         for tipo, nome in metodo.params:
@@ -568,8 +537,6 @@ class Analisador:
             tipo_sorvedouro=tipo, chamada=chamada, metodo=metodo.rotulo, caminho=caminho, status=status,
             ponto=x.ponto or local, excecao=excecao,
         )
-
-    # -------- tudo
 
     def executar(self) -> list[Fluxo]:
         contagem: dict[str, list[str]] = {}

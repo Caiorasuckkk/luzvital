@@ -2,18 +2,8 @@
 
 Cada regra tem nome, regex, severidade (1 a 5) e categoria. A função `encontrar`
 recebe um texto e devolve os achados com o trecho JÁ MASCARADO: o valor inteiro
-nunca sai deste módulo, nem para o relatório, nem para a IA.
-
-Regras:
-    cpf          CPF com dígito verificador válido (não pega qualquer número de 11 dígitos)
-    telefone     telefone BR, fixo ou celular, com ou sem DDD formatado
-    email        endereço de e-mail
-    cep          CEP 00000-000 (ou "CEP 00000000")
-    endereco     logradouro + número ("Rua X, 100", "Av. Y 2000")
-    saude        termos de saúde: oxigênio, insulina e os nomes do enum TipoDependencia
-    cid10        código CID-10 no formato A00.0
-    senha        connection string com senha, password=..., pwd=...
-    chave_api    chaves de API conhecidas e api_key=/secret=/token= com valor longo
+nunca sai deste módulo, nem para o relatório, nem para a IA. O CPF só conta se o
+dígito verificador for válido, para não pegar qualquer número de 11 dígitos.
 
 Valores já mascarados (529.***.***-25, (11) *****-0001) são reconhecidos e
 devolvidos à parte, como prova de que a máscara funcionou. Não contam como vazamento.
@@ -41,8 +31,6 @@ ACHADO = "ACHADO"
 FICTICIO = "FICTICIO_DECLARADO"
 EXPOSICAO_ACEITA = "EXPOSICAO_ACEITA"
 
-
-# ---------------------------------------------------------------- validação e máscara
 
 def _digitos(valor: str) -> str:
     return re.sub(r"\D", "", valor)
@@ -102,8 +90,6 @@ def _mask_segredo(v: str) -> str:
         return f"{m.group(1)}=***"
     return f"{v[:6]}***"
 
-
-# ---------------------------------------------------------------- regras
 
 @dataclass(frozen=True)
 class Regra:
@@ -184,8 +170,6 @@ MASCARADOS = [
     ("telefone", re.compile(r"\(\d{2}\)\s?\*{4,5}-\d{4}")),
 ]
 
-
-# ---------------------------------------------------------------- achados
 
 @dataclass
 class Achado:
@@ -276,8 +260,6 @@ def encontrar(texto: str, arquivo: str | None = None, contexto: str | None = Non
         resultado.achados.append(achado)
     return resultado
 
-
-# ---------------------------------------------------------------- varredura de pasta
 
 EXTENSOES = {".cs", ".json", ".http", ".xml", ".config", ".yml", ".yaml", ".env", ".txt", ".md", ".csproj"}
 PASTAS_IGNORADAS = {"bin", "obj", ".vs", ".git", "node_modules", "__pycache__", ".venv"}

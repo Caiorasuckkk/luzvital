@@ -5,10 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LuzVital.Infrastructure.Notificacao;
 
-/// <summary>
-/// Simula o envio por SMS. Não manda mensagem de verdade: só registra no log,
-/// sempre com o telefone mascarado (nada de dado pessoal em log).
-/// </summary>
+/// <summary>Simula o envio por SMS: só registra no log, com o telefone mascarado.</summary>
 public class SmsNotificadorSimulado : INotificador
 {
     private readonly ILogger<SmsNotificadorSimulado> _logger;

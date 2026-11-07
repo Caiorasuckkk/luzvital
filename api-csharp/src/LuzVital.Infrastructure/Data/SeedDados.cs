@@ -4,10 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LuzVital.Infrastructure.Data;
 
-/// <summary>
-/// Dados FICTÍCIOS para demonstração. Nenhuma pessoa real: nomes inventados,
-/// CPFs gerados só para passar na validação, telefones de mentira (119000000xx).
-/// </summary>
+/// <summary>Dados fictícios para demonstração: nomes inventados, CPFs gerados só para passar na validação e telefones 119000000xx.</summary>
 public static class SeedDados
 {
     public static async Task PopularAsync(LuzVitalDbContext db, CancellationToken ct = default)

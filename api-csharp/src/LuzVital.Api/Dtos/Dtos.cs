@@ -4,7 +4,7 @@ using LuzVital.Domain.Entities;
 
 namespace LuzVital.Api.Dtos;
 
-// ---------- Cidadãos ----------
+// Cidadãos
 
 public record CidadaoRequest(
     [Required, StringLength(120, MinimumLength = 3)] string Nome,
@@ -23,7 +23,7 @@ public record CidadaoResponse(int Id, string Nome, string CpfMascarado, string T
         Mascara.Telefone(c.Telefone), c.Bairro, c.Dependencia, c.AutonomiaHoras, c.EhPrioritario);
 }
 
-// ---------- Voluntários ----------
+// Voluntários
 
 public record VoluntarioRequest(
     [Required, StringLength(120, MinimumLength = 3)] string Nome,
@@ -38,7 +38,7 @@ public record VoluntarioResponse(int Id, string Nome, string TelefoneMascarado, 
         new(v.Id, v.Nome, Mascara.Telefone(v.Telefone), v.Bairro, v.Disponivel);
 }
 
-// ---------- Previsões (vêm do ML) ----------
+// Previsões (vêm do ML)
 
 public record PrevisaoRequest(
     [Required] DateOnly Data,
@@ -48,7 +48,7 @@ public record PrevisaoRequest(
 public record PrevisaoResponse(int Id, DateOnly Data, double Probabilidade, NivelRisco Nivel, string VersaoModelo,
     int? AlertaId, int PessoasNotificadas);
 
-// ---------- Alertas ----------
+// Alertas
 
 public record AlertaManualRequest(
     [Required] DateOnly Data,
@@ -61,7 +61,7 @@ public record AlertaResponse(int Id, DateOnly Data, NivelRisco Nivel, string? Ba
     public static AlertaResponse De(Alerta a) => new(a.Id, a.Data, a.Nivel, a.Bairro, a.Mensagem, a.Ativo);
 }
 
-// ---------- Check-ins ----------
+// Check-ins
 
 public record CheckInRequest(
     [Range(1, int.MaxValue)] int AlertaId,

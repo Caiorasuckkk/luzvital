@@ -71,7 +71,7 @@ def _e(x) -> str:
 
 
 def _medidor(indice: int, faixa: str) -> str:
-    """Barra 0–100 com marcas em 30 e 60. A cor da barra é a da faixa."""
+    """Barra de 0 a 100 com marcas em 30 e 60, na cor da faixa."""
     status = FAIXA_STATUS[faixa][0]
     largura = max(indice, 0) * 6
     return (

@@ -22,7 +22,7 @@ public class PrevisoesController : ControllerBase
     }
 
     /// <summary>
-    /// Registra a previsão. Probabilidade ≥ 0,4 abre alerta de atenção; ≥ 0,7, alerta alto.
+    /// Registra a previsão. Probabilidade a partir de 0,4 abre alerta de atenção; a partir de 0,7, alerta alto.
     /// Quando abre alerta, avisa cidadãos (prioritários primeiro) e voluntários.
     /// </summary>
     [HttpPost]
