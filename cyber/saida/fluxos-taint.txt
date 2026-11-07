@@ -86,12 +86,12 @@ Luz Vital · fluxos do taint analysis
       sorvedouro api-csharp/src/LuzVital.Api/Controllers/VoluntariosController.cs:60  (Ok)
       caminho    _db.Voluntarios → v → VoluntarioResponse.De (api-csharp/src/LuzVital.Api/Dtos/Dtos.cs:37) → parâmetro v (Voluntario) → v.Telefone → Mascara.Telefone → Ok(...) [resposta HTTP]
   [SANITIZADO] Telefone · log
-      fonte      api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:20
-      sorvedouro api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:23  (_logger.LogInformation)
+      fonte      api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:17
+      sorvedouro api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:20  (_logger.LogInformation)
       caminho    parâmetro destinatario (Pessoa) → destinatario.Telefone → Mascara.Telefone → _logger.LogInformation(...) [log]
   [SANITIZADO] Telefone · log
-      fonte      api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:37
-      sorvedouro api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:40  (_logger.LogInformation)
+      fonte      api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:34
+      sorvedouro api-csharp/src/LuzVital.Infrastructure/Notificacao/NotificadoresSimulados.cs:37  (_logger.LogInformation)
       caminho    parâmetro destinatario (Pessoa) → destinatario.Telefone → Mascara.Telefone → _logger.LogInformation(...) [log]
 
 == cyber/exemplos/vulneravel  ·  índice 65 (alto)  ·  7 fluxos de vazamento (4 defeitos), 4 exposições aceitas, 9 sanitizados
