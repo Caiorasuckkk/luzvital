@@ -1,8 +1,8 @@
-# Luz Vital · API C# (.NET 8)
+# Luz Vital - API C# (.NET 8)
 
 API central da Luz Vital. Guarda os cidadãos que dependem de energia em casa, os voluntários do bairro, as previsões de risco que chegam do modelo de ML, os alertas e os check-ins feitos durante um apagão.
 
-Todos os dados de exemplo são **fictícios**. Nenhum dado pessoal real é usado.
+Os dados de exemplo do seed (`SeedDados.cs`) são fictícios.
 
 ## Como rodar
 
@@ -24,16 +24,14 @@ dotnet test
 
 ## Migrations
 
-O projeto sobe sem migration (usa `EnsureCreated`). Para gerar a migration inicial, que é o que a disciplina pede:
+A migration inicial (`Inicial`) está em `src/LuzVital.Infrastructure/Migrations/`. A API aplica a migration com `Migrate()` ao subir.
+
+Para criar uma nova depois de mudar o modelo:
 
 ```bash
 dotnet tool install --global dotnet-ef
-rm -f src/LuzVital.Api/luzvital.db
-dotnet ef migrations add Inicial -p src/LuzVital.Infrastructure -s src/LuzVital.Api
-dotnet run --project src/LuzVital.Api
+dotnet ef migrations add NomeDaMudanca -p src/LuzVital.Infrastructure -s src/LuzVital.Api
 ```
-
-Depois que existe migration, a API aplica com `Migrate()` ao subir.
 
 ## Estrutura
 
@@ -60,7 +58,7 @@ tests/
 | GET, PUT, DELETE | `/api/cidadaos/{id}` | Consulta, atualiza, remove |
 | GET, POST | `/api/voluntarios` | Lista e cadastra voluntário |
 | PATCH | `/api/voluntarios/{id}/disponibilidade` | Liga/desliga disponibilidade |
-| POST | `/api/previsoes` | **Entrada do ML.** Grava a previsão e, se o risco for ≥ 0,4, abre alerta e avisa todo mundo |
+| POST | `/api/previsoes` | Entrada do ML. Grava a previsão e, se o risco for 0,4 ou mais, abre alerta e avisa os cidadãos e os voluntários disponíveis |
 | GET | `/api/previsoes` | Últimas previsões |
 | GET | `/api/alertas?bairro=` | Alertas ativos de hoje em diante (é o que o app mostra) |
 | POST | `/api/alertas` | Alerta manual para um bairro |
@@ -81,14 +79,14 @@ POST /api/previsoes
 
 | Probabilidade | Nível | Gera alerta? |
 | --- | --- | --- |
-| < 0,4 | Baixo | Não |
+| menor que 0,4 | Baixo | Não |
 | 0,4 a 0,69 | Atencao | Sim |
-| ≥ 0,7 | Alto | Sim |
+| 0,7 ou mais | Alto | Sim |
 
 ## Regras de negócio
 
 - CPF validado pelos dígitos e único no cadastro
-- Cidadão com até 4h de autonomia sem energia é **prioritário**: recebe o alerta primeiro e aparece no topo do painel
+- Cidadão com até 4h de autonomia sem energia é prioritário: recebe o alerta primeiro e aparece no topo do painel
 - Previsão não pode ser para data passada; uma segunda previsão para o mesmo dia não duplica o alerta
 - Voluntário só faz check-in de quem mora no mesmo bairro, e só se estiver disponível
 - Check-in "precisa de ajuda" exige descrição
@@ -96,48 +94,47 @@ POST /api/previsoes
 
 ## Dados pessoais
 
-CPF e telefone nunca saem inteiros: as respostas trazem `529.***.***-25` e `(11) *****-0001`, e o endereço não sai em nenhuma resposta. Os logs de notificação também usam o telefone mascarado.
+As respostas trazem CPF e telefone mascarados (`529.***.***-25` e `(11) *****-0001`) e não trazem o endereço. Os logs de notificação também usam o telefone mascarado.
 
-## Como cobre a rubrica
+## Conceitos aplicados
 
-| Critério | Onde |
-| --- | --- |
-| POO (3,0) | Herança `Pessoa` → `Cidadao`/`Voluntario` com método abstrato; encapsulamento (setters privados, regras dentro das entidades); interface `INotificador` com duas implementações |
-| Web API (2,5) | 6 controllers REST, DTOs, códigos HTTP certos (201, 204, 404, 409, 422), validação, `ProblemDetails` |
-| EF Core + LINQ (1,5) | `DbContext` com TPH, conversões, índices; consultas em `ServicoPainel` |
-| Async/await (1,0) | Todo acesso a banco e envio de notificação é assíncrono, com `CancellationToken` |
-| Qualidade (2,0) | Camadas separadas, injeção de dependência, tratamento central de erros, testes xUnit |
+- POO: `Pessoa` é abstrata, com o método `SaudacaoAlerta()`, e `Cidadao` e `Voluntario` herdam dela; as regras ficam dentro das entidades, com setters privados (`LuzVital.Domain/Entities/`).
+- Interfaces: `INotificador` (SMS e WhatsApp simulados), `IRelogio`, `IServicoAlertas` e `IServicoPainel`.
+- Injeção de dependência: os serviços e os notificadores são registrados no `Program.cs` e chegam aos controllers pelo construtor.
+- EF Core + LINQ: `LuzVitalDbContext` com herança TPH, conversões e índices; as consultas do painel ficam em `ServicoPainel`.
+- Async: todo acesso ao banco e todo envio de notificação usam `async`/`await` com `CancellationToken`.
+- Testes: xUnit em `tests/LuzVital.Tests`, com as regras do domínio e o `ServicoAlertas` rodando em banco em memória.
 
 ## Evidências
 
-**1. Testes passando:** os 24 testes xUnit de domínio e do serviço de alertas.
+1. Testes passando: os 24 testes xUnit de domínio e do serviço de alertas.
 
 ![Testes passando](docs/evidencias/01-testes.png)
 
-**2. Swagger:** a API no ar com todos os endpoints documentados.
+2. Swagger: a API no ar com todos os endpoints documentados.
 
 ![Swagger](docs/evidencias/02-swagger.png)
 
-**3. CPF e telefone mascarados:** a lista de cidadãos não expõe CPF, telefone nem endereço inteiros.
+3. CPF e telefone mascarados: a lista de cidadãos não expõe CPF, telefone nem endereço inteiros.
 
 ![CPF e telefone mascarados](docs/evidencias/03-cidadaos-mascarados.png)
 
-**4. Previsão do ML gerando alerta:** uma previsão com risco acima de 0,4 abre o alerta.
+4. Previsão do ML gerando alerta: uma previsão com risco acima de 0,4 abre o alerta.
 
 ![Previsão do ML gerando alerta](docs/evidencias/04-previsao-gera-alerta.png)
 
-**5. Check-in aceito:** um voluntário registra que checou um cidadão do mesmo bairro.
+5. Check-in aceito: um voluntário registra que checou um cidadão do mesmo bairro.
 
 ![Check-in aceito](docs/evidencias/05-checkin-ok.png)
 
-**6. Regra de negócio com 422:** a API recusa o check-in de um cidadão de outro bairro.
+6. Regra de negócio com 422: a API recusa o check-in de um cidadão de outro bairro.
 
 ![Regra de negócio barrando check-in de outro bairro](docs/evidencias/06-regra-de-negocio-422.png)
 
-**7. Painel:** quem ainda falta checar, com os prioritários primeiro.
+7. Painel: quem ainda falta checar, com os prioritários primeiro.
 
 ![Painel de quem falta checar](docs/evidencias/07-painel.png)
 
-**8. Resumo por bairro:** a situação de cada bairro durante o alerta.
+8. Resumo por bairro: a situação de cada bairro durante o alerta.
 
 ![Resumo por bairro](docs/evidencias/08-resumo.png)
