@@ -21,15 +21,3 @@ Global Solution CitizenTech, FIAP 2026.2, Engenharia de Software
 - Caio Rasuck RM 93645
 - Arthur Albuquerque RM 93025
 
-## Partes
-
-| Pasta | Disciplina | Situação | Vídeo |
-| --- | --- | --- | --- |
-| `api-csharp/` | C# Software Development | Pronto | |
-| `soa-java/` | SOA e Web Services | Arthur Albuquerque (responsável) | |
-| `mobile/` | Mobile Development | Arthur Albuquerque (responsável) | |
-| [luzvital-ml](https://github.com/Caiorasuckkk/luzvital-ml) | IA & Machine Learning | Pronto | https://youtu.be/a17KP1B8xQU |
-| `cyber/` | Cybersecurity | Pronto | https://youtu.be/seKUeEGIqPk |
-| `docs/` | Testing, Compliance & QA | Arthur Albuquerque (responsável) | |
-
-Tudo o que aparece como pessoa no sistema é fictício. As bases do ML são públicas (INMET e ANEEL), e a fonte de cada uma está no [`dados/README.md` do luzvital-ml](https://github.com/Caiorasuckkk/luzvital-ml/blob/main/dados/README.md).
