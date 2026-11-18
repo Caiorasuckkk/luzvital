@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using LuzVital.Api;
+using LuzVital.Api.Controllers;
+using LuzVital.Api.Seguranca;
 using LuzVital.Domain.Abstractions;
 using LuzVital.Infrastructure.Data;
 using LuzVital.Infrastructure.Notificacao;
@@ -23,8 +25,17 @@ builder.Services.AddScoped<INotificador, WhatsAppNotificadorSimulado>();
 builder.Services.AddExceptionHandler<TratamentoDeErros>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddCamadaSeguranca(builder.Configuration);
+builder.Logging.EmbrulharComLogSeguro();
+
 builder.Services.AddControllers()
-    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+    .ConfigureApplicationPartManager(m =>
+    {
+        // As rotas que vazam dado de propósito só existem em Development.
+        if (!builder.Environment.IsDevelopment())
+            m.FeatureProviders.Add(new SemControllerDeDemo());
+    });
 
 // O app Expo roda em outra origem durante o desenvolvimento.
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
@@ -59,10 +70,13 @@ using (var scope = app.Services.CreateScope())
     await SeedDados.PopularAsync(db);
 }
 
+app.UseStaticFiles();
+app.UseGuardaRespostas();
 app.UseExceptionHandler();
 app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.DocumentTitle = "Luz Vital API");
+app.UsePiiNaEntrada();
 
 app.MapControllers();
 app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();

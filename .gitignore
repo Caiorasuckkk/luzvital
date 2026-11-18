@@ -28,3 +28,7 @@ cyber/entrega/
 cyber/evidencias/luzvital-ml.mp4
 cyber/evidencias/luzvital-ml.pptx
 cyber/evidencias/evidencias-cyber.zip
+cyber/evidencias/*.p8
+cyber/evidencias/*.pem
+cyber/evidencias/*.key
+cyber/evidencias/*.pdf

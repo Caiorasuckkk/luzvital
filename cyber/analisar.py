@@ -3,6 +3,7 @@
     python -m cyber.analisar --alvo api-csharp/src --alvo cyber/exemplos/vulneravel
 
 Para cada alvo: motor PII nos arquivos, taint nos .cs e Índice de Risco Cidadão.
+Os arquivos de cyber/exclusoes.json ficam de fora, cada um com o motivo.
 Com a API no ar, o scanner de runtime chama os GETs e o resultado é somado ao alvo
 que é um projeto .NET (tem .csproj). Depois, a IA (ou o modo offline) escreve os
 alertas e as correções. Saída em cyber/saida/: relatorio.html, achados.json e
@@ -24,7 +25,7 @@ import sys
 from collections import Counter
 from datetime import datetime
 
-from cyber import indice
+from cyber import exclusoes, indice
 from cyber.dashboard import gerar as dashboard
 from cyber.ia import remediacao
 from cyber.pii import regras as pii
@@ -190,6 +191,7 @@ def main(argv: list[str] | None = None) -> int:
         "comando": "python -m cyber.analisar " + " ".join(f"--alvo {a}" for a in args.alvo),
         "formula": FORMULA,
         "excecoes": excecoes,
+        "arquivos_excluidos": list(exclusoes.carregar()),
         "alvos": [{k: v for k, v in a.items() if k != "achados_codigo_todos"} for a in alvos],
         "remediacao": rem,
     }
@@ -215,6 +217,8 @@ def main(argv: list[str] | None = None) -> int:
             if rt["no_ar"]:
                 print(f"    runtime: {len(rt['rotas'])} rotas, {rt['mascarados']} valores mascarados, "
                       f"{c['runtime_vazamentos']} dados inteiros")
+    for e in exclusoes.carregar():
+        print(f"  Fora da análise estática: {e['caminho']}")
     modo = f"online ({rem['modelo']})" if rem["modo"] == "online" else f"offline ({rem['motivo']})"
     print(f"  IA na remediação: {modo}")
     print(f"  Saída: {os.path.join(args.saida, 'relatorio.html')}")

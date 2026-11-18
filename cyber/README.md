@@ -55,6 +55,16 @@ A API devolve o tipo de dependência (oxigênio, insulina etc.) em `GET /api/cid
 >
 > Recomendação: autenticação (JWT) e perfil de acesso (coordenador, voluntário e cidadão), para que só o voluntário daquele bairro veja a dependência, e só durante um alerta ativo. Para os outros perfis, a resposta traz só "prioritário: sim/não".
 
+## Auditoria e camada em tempo real
+
+Este módulo é a auditoria do código: roda fora da API e mede o índice. A proteção em tempo real fica dentro da própria API, em `api-csharp/src/LuzVital.Api/Seguranca/` (seção "Segurança em tempo real" do `api-csharp/README.md`). As duas partes usam as mesmas regras de dado pessoal e as mesmas exposições aceitas.
+
+## Arquivos fora da análise estática
+
+`exclusoes.json` lista os arquivos que a análise pula, cada um com o motivo. Hoje há um só: `DemoSegurancaController.cs`. Ele vaza um CPF e um endereço fictícios de propósito, só em Development, para demonstrar a camada em tempo real, que pega os três vazamentos. Se entrasse na análise, contaria como defeito algo que a API já bloqueia. A saída do `analisar` e o `achados.json` mostram essa lista.
+
+O `empacotar.py` monta o zip a partir de uma lista fixa de caminhos, sem copiar a pasta inteira. Assim nenhum arquivo pessoal deixado em `evidencias/` vai junto.
+
 ## Índice de Risco Cidadão
 
 ```

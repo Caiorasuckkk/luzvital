@@ -23,3 +23,19 @@ public enum SituacaoCheckIn
     PrecisaDeAjuda = 2,
     SemResposta = 3
 }
+
+public enum TipoEventoSeguranca
+{
+    PiiNaEntrada = 1,
+    LogMascarado = 2,
+    RespostaBloqueada = 3,
+    ExcecaoMascarada = 4
+}
+
+/// <summary>Cor do farol de segurança. A ordem importa: o farol mostra o pior nível.</summary>
+public enum NivelSeguranca
+{
+    Verde = 0,
+    Amarelo = 1,
+    Vermelho = 2
+}

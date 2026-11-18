@@ -1,5 +1,5 @@
 {
-  "gerado_em": "07/11/2026 15:20",
+  "gerado_em": "17/11/2026 19:17",
   "comando": "python -m cyber.analisar --alvo api-csharp/src --alvo cyber/exemplos/vulneravel",
   "formula": "Índice de Risco Cidadão (0 a 100).\n\n    peso   = severidade da regra (1 a 5) × fator da categoria\n    fator  = saúde 2,0 · segredo 1,5 · identificação, contato e localização 1,0\n    S      = soma dos pesos dos vazamentos não sanitizados\n    Índice = arredonda( 100 × (1 − e^(−S/20)) )\n    Faixa  = 0–29 baixo · 30–59 médio · 60–100 alto\n\nEntram em S:\n    - fluxos do taint com status VAZAMENTO;\n    - dado inteiro encontrado nas respostas da API em funcionamento (scanner de runtime);\n    - segredos (senha, chave de API) escritos no código.\n\nUm defeito conta uma vez, mesmo que chegue a várias rotas: o CPF cru dentro de um DTO\nusado por 4 endpoints é 1 vazamento de CPF, e o relatório mostra as 4 rotas. Se o mesmo\nponto vaza dois dados (telefone e dependência no mesmo log), cada dado conta.\n\nNão entram em S (aparecem no relatório, à parte): fluxos SANITIZADOS, exposições aceitas,\ndados fictícios declarados e dado pessoal escrito no código que não seja segredo.",
   "excecoes": {
@@ -30,6 +30,12 @@
       }
     ]
   },
+  "arquivos_excluidos": [
+    {
+      "caminho": "api-csharp/src/LuzVital.Api/Controllers/DemoSegurancaController.cs",
+      "motivo": "Vazamento proposital para demonstrar a camada de segurança em tempo real: loga um CPF inteiro, devolve um CPF cru e lança exceção com endereço, todos do seed fictício. O controller só existe em Development e os 3 vazamentos são pegos em runtime (log mascarado, resposta bloqueada com 500 e exceção mascarada). Se entrasse aqui, o taint contaria como defeito um vazamento que a própria API já bloqueia."
+    }
+  ],
   "alvos": [
     {
       "alvo": "api-csharp/src",
@@ -587,6 +593,20 @@
       "mascarados_codigo": [
         {
           "tipo": "cpf",
+          "trecho": "529.***.***-25",
+          "linha": 99,
+          "arquivo": "api-csharp/src/LuzVital.Api/Seguranca/MotorPii.cs",
+          "contexto": null
+        },
+        {
+          "tipo": "telefone",
+          "trecho": "(11) *****-0001",
+          "linha": 99,
+          "arquivo": "api-csharp/src/LuzVital.Api/Seguranca/MotorPii.cs",
+          "contexto": null
+        },
+        {
+          "tipo": "cpf",
           "trecho": "123.***.***-09",
           "linha": 28,
           "arquivo": "api-csharp/src/LuzVital.Domain/Cpf.cs",
@@ -607,9 +627,9 @@
           {
             "rota": "/api/cidadaos",
             "status": 200,
-            "valores": 20,
-            "mascarados": 8,
-            "achados": 4
+            "valores": 30,
+            "mascarados": 12,
+            "achados": 6
           },
           {
             "rota": "/api/voluntarios",
@@ -642,9 +662,9 @@
           {
             "rota": "/api/painel/sem-checkin?alertaId=2",
             "status": 200,
-            "valores": 12,
+            "valores": 18,
             "mascarados": 0,
-            "achados": 4
+            "achados": 6
           },
           {
             "rota": "/api/painel/resumo?alertaId=2",
@@ -690,11 +710,41 @@
             "rotulo": "Dado de saúde",
             "categoria": "saúde",
             "severidade": 4,
+            "trecho": "Oxi***",
+            "linha": 1,
+            "coluna": 1,
+            "inicio": 0,
+            "fim": 18,
+            "arquivo": "/api/cidadaos",
+            "contexto": "/api/cidadaos · dependencia",
+            "status": "EXPOSICAO_ACEITA",
+            "motivo": "dependencia-cadastro"
+          },
+          {
+            "regra": "saude",
+            "rotulo": "Dado de saúde",
+            "categoria": "saúde",
+            "severidade": 4,
             "trecho": "Med***",
             "linha": 1,
             "coluna": 1,
             "inicio": 0,
             "fim": 22,
+            "arquivo": "/api/cidadaos",
+            "contexto": "/api/cidadaos · dependencia",
+            "status": "EXPOSICAO_ACEITA",
+            "motivo": "dependencia-cadastro"
+          },
+          {
+            "regra": "saude",
+            "rotulo": "Dado de saúde",
+            "categoria": "saúde",
+            "severidade": 4,
+            "trecho": "Cad***",
+            "linha": 1,
+            "coluna": 1,
+            "inicio": 0,
+            "fim": 17,
             "arquivo": "/api/cidadaos",
             "contexto": "/api/cidadaos · dependencia",
             "status": "EXPOSICAO_ACEITA",
@@ -750,6 +800,21 @@
             "rotulo": "Dado de saúde",
             "categoria": "saúde",
             "severidade": 4,
+            "trecho": "Oxi***",
+            "linha": 1,
+            "coluna": 1,
+            "inicio": 0,
+            "fim": 18,
+            "arquivo": "/api/painel/sem-checkin",
+            "contexto": "/api/painel/sem-checkin?alertaId=2 · dependencia",
+            "status": "EXPOSICAO_ACEITA",
+            "motivo": "dependencia-painel"
+          },
+          {
+            "regra": "saude",
+            "rotulo": "Dado de saúde",
+            "categoria": "saúde",
+            "severidade": 4,
             "trecho": "Med***",
             "linha": 1,
             "coluna": 1,
@@ -774,9 +839,24 @@
             "contexto": "/api/painel/sem-checkin?alertaId=2 · dependencia",
             "status": "EXPOSICAO_ACEITA",
             "motivo": "dependencia-painel"
+          },
+          {
+            "regra": "saude",
+            "rotulo": "Dado de saúde",
+            "categoria": "saúde",
+            "severidade": 4,
+            "trecho": "Cad***",
+            "linha": 1,
+            "coluna": 1,
+            "inicio": 0,
+            "fim": 17,
+            "arquivo": "/api/painel/sem-checkin",
+            "contexto": "/api/painel/sem-checkin?alertaId=2 · dependencia",
+            "status": "EXPOSICAO_ACEITA",
+            "motivo": "dependencia-painel"
           }
         ],
-        "mascarados": 10,
+        "mascarados": 14,
         "avisos": []
       },
       "indice": 0,
@@ -843,6 +923,21 @@
           "contexto": null,
           "status": "FICTICIO_DECLARADO",
           "motivo": "Dado fictício declarado (seed e arquivo de exemplo da API)."
+        },
+        {
+          "regra": "saude",
+          "rotulo": "Dado de saúde",
+          "categoria": "saúde",
+          "severidade": 4,
+          "trecho": "oxi***",
+          "linha": 17,
+          "coluna": 83,
+          "inicio": 641,
+          "fim": 649,
+          "arquivo": "api-csharp/src/LuzVital.Api/Seguranca/GuardaRespostas.cs",
+          "contexto": null,
+          "status": "ACHADO",
+          "motivo": null
         },
         {
           "regra": "telefone",
@@ -1001,7 +1096,7 @@
         "fluxos_sanitizados": 18,
         "exposicoes_aceitas": 2,
         "fluxos_aceitos": 5,
-        "achados_codigo": 0,
+        "achados_codigo": 1,
         "ficticios": 14,
         "runtime_vazamentos": 0
       },
@@ -1031,7 +1126,7 @@
           "vazamentos": 0,
           "aceitas": 5,
           "sanitizados": 0,
-          "codigo": 0,
+          "codigo": 1,
           "ficticios": 1
         },
         "segredo": {
@@ -1639,10 +1734,25 @@
     }
   ],
   "remediacao": {
-    "modo": "online",
-    "modelo": "claude-haiku-5-5",
-    "motivo": null,
+    "modo": "offline",
+    "modelo": null,
+    "motivo": "ANTHROPIC_API_KEY não configurada",
     "itens": [
+      {
+        "id": "1.1",
+        "alvo": "api-csharp/src",
+        "regra": "saude",
+        "rotulo": "Dado de saúde",
+        "categoria": "saúde",
+        "onde": "código",
+        "local": "api-csharp/src/LuzVital.Api/Seguranca/GuardaRespostas.cs:17",
+        "caminho": "",
+        "trecho": "oxi***",
+        "com_saude": false,
+        "alerta_cidadao": "O tipo de aparelho de saúde de quem depende de energia em casa estava escrito no código do sistema, que fica publicado no GitHub. Qualquer pessoa que abrisse o repositório saberia que ela depende de um aparelho para viver e fica vulnerável quando a luz cai.",
+        "correcao_tecnica": "Troque o valor por um dado fictício já declarado em cyber/pii/ficticios.py, ou tire-o do código.",
+        "origem_texto": "modelo offline"
+      },
       {
         "id": "2.1",
         "alvo": "cyber/exemplos/vulneravel",
@@ -1654,9 +1764,9 @@
         "caminho": "_db.Cidadaos → query → lista → CidadaoResponse.De (cyber/exemplos/vulneravel/Dtos.cs:23) → parâmetro c (Cidadao) → c.Cpf → new(...) → Ok(...) [resposta HTTP]",
         "trecho": "",
         "com_saude": false,
-        "alerta_cidadao": "Seu CPF aparecia nas respostas do sistema para quem consultava os cadastros. Qualquer pessoa com acesso a essas respostas poderia usá-lo para se passar por você.",
-        "correcao_tecnica": "Em CidadaoResponse.De (Dtos.cs, linha 23), remova o campo Cpf do DTO de resposta ou substitua por Cpf.Mascarar(c.Cpf). Confirme que nenhum outro DTO de saída expõe o campo sem máscara.",
-        "origem_texto": "IA (claude-haiku-5-5)"
+        "alerta_cidadao": "O CPF de quem depende de energia em casa saía inteiro na resposta da API. Qualquer pessoa que chamasse a API poderia usar o documento em golpes e cadastros falsos.",
+        "correcao_tecnica": "No DTO de resposta, troque c.Cpf por Cpf.Mascarar(c.Cpf) e renomeie o campo para CpfMascarado.",
+        "origem_texto": "modelo offline"
       },
       {
         "id": "2.2",
@@ -1669,9 +1779,9 @@
         "caminho": "parâmetro req (CidadaoRequest) → req.Endereco → newDomainException(...) [exceção]",
         "trecho": "",
         "com_saude": false,
-        "alerta_cidadao": "Seu endereço podia aparecer em mensagens de erro do sistema. Quem tivesse acesso a esses erros saberia onde você mora e se é alguém que depende de energia em casa.",
-        "correcao_tecnica": "Em CidadaoesController.cs, linha 52, não inclua req.Endereco na mensagem da DomainException; use uma mensagem genérica ou apenas o nome do campo inválido. Se o valor precisar aparecer, passe-o pela máscara adequada antes.",
-        "origem_texto": "IA (claude-haiku-5-5)"
+        "alerta_cidadao": "O endereço de quem depende de energia em casa aparecia na mensagem de erro, que vai para a tela do app e para o registro do servidor. Quem visse o erro ou lesse os logs saberia onde ela mora.",
+        "correcao_tecnica": "Tire o endereço da mensagem da exceção. Use uma mensagem fixa (\"Bairro é obrigatório.\") e, para rastrear, logue só o Id do cadastro.",
+        "origem_texto": "modelo offline"
       },
       {
         "id": "2.3",
@@ -1684,9 +1794,9 @@
         "caminho": "parâmetro destinatario (Pessoa) → destinatario.Telefone → _logger.LogInformation(...) [log]",
         "trecho": "",
         "com_saude": true,
-        "alerta_cidadao": "Seu telefone ficava registrado nos registros do servidor. Qualquer pessoa com acesso a esses registros poderia ligar para você, inclusive para se passar por alguém da equipe.",
-        "correcao_tecnica": "Em NotificadoresSimulados.cs, linha 28, troque destinatario.Telefone por Mascara.Telefone(destinatario.Telefone) na chamada _logger.LogInformation, ou remova o valor do log.",
-        "origem_texto": "IA (claude-haiku-5-5)"
+        "alerta_cidadao": "O telefone de quem usa aparelho de saúde em casa aparecia no registro do servidor. Qualquer pessoa com acesso aos logs poderia ligar para ela.",
+        "correcao_tecnica": "Use Mascara.Telefone(...) antes de logar: _logger.LogInformation(\"... {Telefone}\", Mascara.Telefone(destinatario.Telefone)).",
+        "origem_texto": "modelo offline"
       },
       {
         "id": "2.4",
@@ -1699,9 +1809,9 @@
         "caminho": "parâmetro destinatario (Pessoa) → destinatario is Cidadao cidadao → cidadao.Dependencia → _logger.LogInformation(...) [log]",
         "trecho": "",
         "com_saude": true,
-        "alerta_cidadao": "O tipo de dependência de energia de quem usa equipamentos médicos ficava nos registros do servidor. Isso revela uma condição de saúde a quem tivesse acesso aos registros.",
-        "correcao_tecnica": "Em NotificadoresSimulados.cs, linha 28, remova cidadao.Dependencia do LogInformation ou registre apenas um identificador anônimo do cadastro. Não registre dados de saúde em logs.",
-        "origem_texto": "IA (claude-haiku-5-5)"
+        "alerta_cidadao": "O tipo de aparelho de saúde de quem depende de energia em casa aparecia no registro do servidor. Qualquer pessoa com acesso aos logs saberia que ela depende de um aparelho para viver e fica vulnerável quando a luz cai.",
+        "correcao_tecnica": "Não registre a dependência no log. Registre só o Id da pessoa e, se precisar, \"prioritário: sim/não\".",
+        "origem_texto": "modelo offline"
       }
     ]
   }

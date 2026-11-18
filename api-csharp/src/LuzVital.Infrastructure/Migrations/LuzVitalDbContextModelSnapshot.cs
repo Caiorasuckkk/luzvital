@@ -94,6 +94,57 @@ namespace LuzVital.Infrastructure.Migrations
                     b.ToTable("CheckIns", (string)null);
                 });
 
+            modelBuilder.Entity("LuzVital.Domain.Entities.EventoSeguranca", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DescricaoTecnica")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MensagemCidadao")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModoIa")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nivel")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("OcorridoEm")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Rota")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TiposDeDado")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OcorridoEm");
+
+                    b.ToTable("EventosSeguranca", (string)null);
+                });
+
             modelBuilder.Entity("LuzVital.Domain.Entities.Pessoa", b =>
                 {
                     b.Property<int>("Id")

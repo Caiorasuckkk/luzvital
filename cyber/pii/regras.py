@@ -16,7 +16,7 @@ import re
 from dataclasses import asdict, dataclass, field
 from typing import Callable
 
-from cyber import csharp
+from cyber import csharp, exclusoes
 from cyber.pii.ficticios import eh_ficticio
 
 IDENTIFICACAO = "identificação"
@@ -270,8 +270,9 @@ def arquivos_do_alvo(alvo: str) -> list[str]:
     for raiz, pastas, nomes in os.walk(alvo):
         pastas[:] = sorted(p for p in pastas if p not in PASTAS_IGNORADAS)
         for nome in sorted(nomes):
-            if os.path.splitext(nome)[1].lower() in EXTENSOES:
-                encontrados.append(os.path.join(raiz, nome))
+            caminho = os.path.join(raiz, nome)
+            if os.path.splitext(nome)[1].lower() in EXTENSOES and not exclusoes.excluido(caminho):
+                encontrados.append(caminho)
     return encontrados
 
 

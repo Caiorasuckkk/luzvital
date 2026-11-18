@@ -92,3 +92,15 @@ public class Controller {
 }""")
     assert _status(fluxos) == {("Endereco", "VAZAMENTO")}
     assert fluxos[0].tipo_sorvedouro == "exceção"
+
+
+def test_arquivo_excluido_fica_fora_das_duas_analises():
+    from cyber import exclusoes
+    from cyber.pii import regras as pii
+
+    demo = "api-csharp/src/LuzVital.Api/Controllers/DemoSegurancaController.cs"
+    assert any(e["caminho"] == demo and e["motivo"] for e in exclusoes.carregar())
+    assert exclusoes.excluido(demo)
+    assert not any(c.replace("\\", "/").endswith("DemoSegurancaController.cs")
+                   for c in pii.arquivos_do_alvo("api-csharp/src"))
+    assert not any("DemoSegurancaController" in f.fonte + f.sorvedouro for f in taint.analisar("api-csharp/src"))

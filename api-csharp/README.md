@@ -24,7 +24,7 @@ dotnet test
 
 ## Migrations
 
-A migration inicial (`Inicial`) está em `src/LuzVital.Infrastructure/Migrations/`. A API aplica a migration com `Migrate()` ao subir.
+As migrations (`Inicial` e `Seguranca`) estão em `src/LuzVital.Infrastructure/Migrations/`. A API aplica as migrations com `Migrate()` ao subir.
 
 Para criar uma nova depois de mudar o modelo:
 
@@ -46,8 +46,10 @@ src/
     Servicos/                ServicoAlertas, ServicoPainel (consultas LINQ)
     Notificacao/             SMS e WhatsApp simulados (log com telefone mascarado)
   LuzVital.Api/              controllers, DTOs, tratamento de erros, Swagger
+    Seguranca/               motor PII, middlewares, log seguro, fila de eventos e tradutor (IA)
+    wwwroot/                 painel-seguranca.html
 tests/
-  LuzVital.Tests/            xUnit: regras do domínio + serviço de alertas com banco em memória
+  LuzVital.Tests/            xUnit: regras do domínio, serviço de alertas e camada de segurança
 ```
 
 ## Endpoints
@@ -67,6 +69,8 @@ tests/
 | GET | `/api/checkins?alertaId=` | Check-ins de um alerta |
 | GET | `/api/painel/sem-checkin?alertaId=` | Quem ainda não foi checado, prioritários primeiro |
 | GET | `/api/painel/resumo?alertaId=` | Resumo por bairro |
+| GET | `/api/seguranca/resumo` | Farol de segurança das últimas 24h e contagens por tipo |
+| GET | `/api/seguranca/eventos` | Últimos eventos de segurança, com o aviso para o cidadão |
 
 Exemplos prontos em `src/LuzVital.Api/LuzVital.Api.http`.
 
@@ -95,6 +99,32 @@ POST /api/previsoes
 ## Dados pessoais
 
 As respostas trazem CPF e telefone mascarados (`529.***.***-25` e `(11) *****-0001`) e não trazem o endereço. Os logs de notificação também usam o telefone mascarado.
+
+## Segurança em tempo real
+
+Uma camada que roda dentro da API (`src/LuzVital.Api/Seguranca/`). A análise estática em `cyber/` continua como auditoria do código.
+
+1. **Dado pessoal na entrada.** O `MotorPii` acha CPF (com dígito válido), RG, telefone, e-mail, endereço, senha ou token (pelo nome do campo), laudo, diagnóstico, CID-10 e os tipos de dependência. Valor que já chega mascarado não conta. Em POST e PUT com JSON, o `MiddlewarePiiEntrada` marca os campos em `HttpContext.Items` e grava no log só o JSON mascarado (`"cpf": "529.***.***-25"`). O controller recebe o corpo sem mudança.
+2. **Guarda nas saídas.**
+   - Logs: o `ProvedorLogSeguro` embrulha os provedores de log e mascara qualquer dado inteiro antes da escrita.
+   - Respostas: o `GuardaRespostas` troca por um 500 ("Resposta bloqueada para proteger dados pessoais") toda resposta JSON com CPF, RG, telefone, e-mail, endereço ou senha inteiros.
+   - Exceções: o `TratamentoDeErros` mascara a mensagem antes de responder e de logar.
+   - Exceção aceita: o campo `dependencia` pode sair em `/api/cidadaos` e `/api/painel/sem-checkin`. A lista fica em `appsettings.json` (`Seguranca:ExcecoesExposicao`), com o motivo, e é a mesma de `cyber/taint/excecoes.json`.
+3. **Eventos e IA.** Cada caso vira um `EventoSeguranca` (tabela da migration `Seguranca`). A descrição técnica guarda só valores mascarados. Os níveis são:
+   - verde: entrada mascarada;
+   - amarelo: log mascarado;
+   - vermelho: resposta bloqueada ou exceção.
+
+   Uma fila em segundo plano manda a descrição mascarada para a API da Anthropic (`ANTHROPIC_API_KEY`, modelo em `Seguranca:ModeloIa`, padrão `claude-haiku-5-5`) e recebe um aviso de 2 frases para o cidadão. Sem chave ou com erro, usa um texto fixo por tipo de evento.
+4. **Farol.** `GET /api/seguranca/resumo` dá o pior nível das últimas 24h e as contagens por tipo. `GET /api/seguranca/eventos` traz os últimos eventos. O painel fica em http://localhost:5131/painel-seguranca.html e atualiza a cada 5 segundos.
+
+Em Development há três rotas que vazam dado fictício de propósito, para demonstrar a camada:
+
+- `GET /api/demo-seguranca/log-cpf`: o log sai mascarado;
+- `GET /api/demo-seguranca/resposta-cpf`: a resposta é bloqueada com 500;
+- `GET /api/demo-seguranca/excecao-endereco`: a exceção é mascarada.
+
+`POST /api/seguranca/limpar` apaga os eventos para recomeçar com o farol verde. As rotas de demonstração e o limpar não existem fora de Development.
 
 ## Conceitos aplicados
 

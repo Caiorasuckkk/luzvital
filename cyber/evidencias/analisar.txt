@@ -1,9 +1,10 @@
 
-Luz Vital · Índice de Risco Cidadão
+Luz Vital - Índice de Risco Cidadão
   api-csharp/src
-    índice 0/100 (baixo)  ·  vazamentos: 0 defeitos em 0 fluxos  ·  exposições aceitas: 2 (5 fluxos)  ·  sanitizados: 18
-    runtime: 7 rotas, 10 valores mascarados, 0 dados inteiros
+    índice 0/100 (baixo), vazamentos: 0 defeitos em 0 fluxos, exposições aceitas: 2 (5 fluxos), sanitizados: 18
+    runtime: 7 rotas, 14 valores mascarados, 0 dados inteiros
   cyber/exemplos/vulneravel
-    índice 65/100 (alto)  ·  vazamentos: 4 defeitos em 7 fluxos  ·  exposições aceitas: 1 (4 fluxos)  ·  sanitizados: 9
+    índice 65/100 (alto), vazamentos: 4 defeitos em 7 fluxos, exposições aceitas: 1 (4 fluxos), sanitizados: 9
+  Fora da análise estática: api-csharp/src/LuzVital.Api/Controllers/DemoSegurancaController.cs
   IA na remediação: offline (ANTHROPIC_API_KEY não configurada)
   Saída: cyber\saida\relatorio.html

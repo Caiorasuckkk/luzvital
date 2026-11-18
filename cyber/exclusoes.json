@@ -1,0 +1,9 @@
+{
+  "aviso": "Arquivos fora da análise estática. Cada um precisa de motivo; a lista é mostrada na saída do analisar e vai no achados.json.",
+  "arquivos": [
+    {
+      "caminho": "api-csharp/src/LuzVital.Api/Controllers/DemoSegurancaController.cs",
+      "motivo": "Vazamento proposital para demonstrar a camada de segurança em tempo real: loga um CPF inteiro, devolve um CPF cru e lança exceção com endereço, todos do seed fictício. O controller só existe em Development e os 3 vazamentos são pegos em runtime (log mascarado, resposta bloqueada com 500 e exceção mascarada). Se entrasse aqui, o taint contaria como defeito um vazamento que a própria API já bloqueia."
+    }
+  ]
+}

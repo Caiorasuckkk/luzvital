@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luz Vital · Segurança</title>
+<style>
+  :root {
+    --fundo: #f4f5f7; --cartao: #ffffff; --texto: #1c1f24; --suave: #5b6270; --borda: #dde1e7;
+    --verde: #1e9e55; --amarelo: #e0a100; --vermelho: #d33a2c; --apagado: #c9ced6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fundo: #14171c; --cartao: #1d2128; --texto: #eef0f3; --suave: #a3abb8; --borda: #2e343d; --apagado: #39404a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--fundo); color: var(--texto); }
+  main { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .sub { color: var(--suave); margin: 0 0 24px; }
+  .topo { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; background: var(--cartao);
+          border: 1px solid var(--borda); border-radius: 16px; padding: 24px; }
+  .semaforo { background: #23272e; border-radius: 28px; padding: 14px; display: grid; gap: 12px; }
+  .luz { width: 72px; height: 72px; border-radius: 50%; background: #3a3f47; transition: background .3s, box-shadow .3s; }
+  .luz.ligada.vermelho { background: var(--vermelho); box-shadow: 0 0 28px var(--vermelho); }
+  .luz.ligada.amarelo { background: var(--amarelo); box-shadow: 0 0 28px var(--amarelo); }
+  .luz.ligada.verde { background: var(--verde); box-shadow: 0 0 28px var(--verde); }
+  .estado { font-size: 2rem; font-weight: 700; margin: 0; }
+  .explica { color: var(--suave); margin: 4px 0 16px; }
+  .contagens { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .contagem { border: 1px solid var(--borda); border-radius: 12px; padding: 10px 12px; }
+  .contagem b { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+  .contagem span { color: var(--suave); font-size: .85rem; }
+  h2 { font-size: 1.15rem; margin: 32px 0 12px; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  li { background: var(--cartao); border: 1px solid var(--borda); border-left: 6px solid var(--apagado); border-radius: 12px; padding: 14px 16px; }
+  li.Verde { border-left-color: var(--verde); }
+  li.Amarelo { border-left-color: var(--amarelo); }
+  li.Vermelho { border-left-color: var(--vermelho); }
+  .msg { font-size: 1.1rem; margin: 0 0 8px; }
+  .meta { color: var(--suave); font-size: .85rem; margin: 0 0 6px; }
+  .tec { color: var(--suave); font-size: .8rem; font-family: ui-monospace, Consolas, monospace; margin: 0; overflow-wrap: anywhere; }
+  .vazio, .erro { color: var(--suave); }
+  .erro { color: var(--vermelho); }
+  @media (max-width: 640px) {
+    .topo { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    .semaforo { grid-auto-flow: column; }
+    .luz { width: 56px; height: 56px; }
+    .contagens { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Luz Vital · Segurança em tempo real</h1>
+  <p class="sub">Dados pessoais pegos pela API nas últimas 24 horas. Atualiza a cada 5 segundos.</p>
+
+  <section class="topo" aria-live="polite">
+    <div class="semaforo" role="img" id="semaforo" aria-label="Farol carregando">
+      <div class="luz vermelho" id="luz-Vermelho"></div>
+      <div class="luz amarelo" id="luz-Amarelo"></div>
+      <div class="luz verde" id="luz-Verde"></div>
+    </div>
+    <div>
+      <p class="estado" id="estado">Carregando...</p>
+      <p class="explica" id="explica"></p>
+      <div class="contagens">
+        <div class="contagem"><b id="n-PiiNaEntrada">0</b><span>entradas protegidas</span></div>
+        <div class="contagem"><b id="n-LogMascarado">0</b><span>logs mascarados</span></div>
+        <div class="contagem"><b id="n-RespostaBloqueada">0</b><span>respostas bloqueadas</span></div>
+        <div class="contagem"><b id="n-ExcecaoMascarada">0</b><span>erros mascarados</span></div>
+      </div>
+    </div>
+  </section>
+
+  <h2>Últimos eventos</h2>
+  <ol id="eventos"><li class="vazio">Carregando...</li></ol>
+</main>
+
+<script>
+  const TEXTOS = {
+    Verde: ["Tudo protegido", "Nenhum dado pessoal escapou. Entradas com dado pessoal foram registradas só mascaradas."],
+    Amarelo: ["Atenção", "Um dado pessoal quase foi gravado inteiro no log e foi mascarado a tempo."],
+    Vermelho: ["Bloqueio", "A API tentou devolver ou registrar um dado pessoal inteiro e foi barrada."]
+  };
+  const NOMES = { PiiNaEntrada: "Entrada protegida", LogMascarado: "Log mascarado",
+                  RespostaBloqueada: "Resposta bloqueada", ExcecaoMascarada: "Erro mascarado" };
+
+  function el(tag, classe, texto) {
+    const e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texto !== undefined) e.textContent = texto;
+    return e;
+  }
+
+  async function atualizar() {
+    try {
+      const [resumo, eventos] = await Promise.all([
+        fetch("/api/seguranca/resumo").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+        fetch("/api/seguranca/eventos?limite=30").then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      ]);
+
+      for (const cor of ["Vermelho", "Amarelo", "Verde"])
+        document.getElementById("luz-" + cor).classList.toggle("ligada", resumo.farol === cor);
+      const [titulo, explica] = TEXTOS[resumo.farol];
+      document.getElementById("semaforo").setAttribute("aria-label", "Farol " + resumo.farol);
+      document.getElementById("estado").textContent = titulo;
+      document.getElementById("explica").textContent = explica;
+      for (const [tipo, n] of Object.entries(resumo.porTipo)) {
+        const alvo = document.getElementById("n-" + tipo);
+        if (alvo) alvo.textContent = n;
+      }
+
+      const lista = document.getElementById("eventos");
+      lista.replaceChildren();
+      if (eventos.length === 0) lista.append(el("li", "vazio", "Nenhum evento registrado."));
+      for (const e of eventos) {
+        const li = el("li", e.nivel);
+        li.append(el("p", "msg", e.mensagemCidadao));
+        const quando = new Date(e.ocorridoEm.endsWith("Z") ? e.ocorridoEm : e.ocorridoEm + "Z").toLocaleString("pt-BR");
+        li.append(el("p", "meta", `${quando} · ${NOMES[e.tipo] ?? e.tipo} · ${e.rota} · ${e.tiposDeDado} · IA ${e.modoIa}`));
+        li.append(el("p", "tec", e.descricaoTecnica));
+        lista.append(li);
+      }
+    } catch (erro) {
+      document.getElementById("estado").textContent = "Sem conexão com a API";
+      document.getElementById("explica").textContent = "Tentando de novo em 5 segundos.";
+    }
+  }
+
+  atualizar();
+  setInterval(atualizar, 5000);
+</script>
+</body>
+</html>

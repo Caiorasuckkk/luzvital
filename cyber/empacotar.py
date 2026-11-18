@@ -2,24 +2,54 @@
 
     python -m cyber.empacotar
 
-Leva o código do módulo, o relatório gerado (cyber/saida) e as evidências
-(cyber/evidencias). Deixa de fora .venv, __pycache__, .pytest_cache e a própria
-pasta de entrega. Rode antes `python -m cyber.analisar ...` para o relatório
+Só entra no zip o que está na lista INCLUIR: o código do módulo, os prints e os
+.txt de evidência e o relatório gerado (cyber/saida). A pasta cyber/ nunca é
+copiada inteira, porque cyber/evidencias/ recebe arquivos pessoais que não podem
+sair na entrega. Rode antes `python -m cyber.analisar ...` para o relatório
 estar atualizado.
 """
 
 from __future__ import annotations
 
+import glob
 import os
 import sys
 import zipfile
 
 RAIZ_CYBER = os.path.dirname(os.path.abspath(__file__))
 DESTINO = os.path.join(RAIZ_CYBER, "entrega", "luzvital-cyber.zip")
-IGNORAR_PASTAS = {".venv", "venv", "__pycache__", ".pytest_cache", "entrega"}
-IGNORAR_EXT = {".pyc", ".pyo"}
-# Arquivos do ML e o zip de origem dos prints (já extraídos em evidencias/prints/)
-IGNORAR_ARQUIVOS = {"luzvital-ml.mp4", "luzvital-ml.pptx", "evidencias-cyber.zip"}
+
+# Relativos a cyber/. Cada padrão casa um tipo de arquivo numa pasta só, sem descer em subpastas.
+INCLUIR = [
+    "README.md",
+    "requirements.txt",
+    "exclusoes.json",
+    "*.py",
+    "dashboard/*.py",
+    "ia/*.py",
+    "pii/*.py",
+    "runtime/*.py",
+    "taint/*.py",
+    "taint/excecoes.json",
+    "tests/*.py",
+    "exemplos/vulneravel/*.cs",
+    "evidencias/README.md",
+    "evidencias/*.txt",
+    "evidencias/prints/*.png",
+    "saida/relatorio.html",
+    "saida/achados.json",
+    "saida/fluxos-taint.txt",
+]
+
+
+def arquivos_da_entrega() -> list[str]:
+    encontrados: list[str] = []
+    for padrao in INCLUIR:
+        achados = sorted(glob.glob(os.path.join(RAIZ_CYBER, padrao)))
+        if not achados:
+            print(f"aviso: nada encontrado para cyber/{padrao}", file=sys.stderr)
+        encontrados.extend(a for a in achados if os.path.isfile(a) and a not in encontrados)
+    return encontrados
 
 
 def main() -> int:
@@ -30,18 +60,12 @@ def main() -> int:
         return 1
 
     os.makedirs(os.path.dirname(DESTINO), exist_ok=True)
-    total = 0
+    arquivos = arquivos_da_entrega()
     with zipfile.ZipFile(DESTINO, "w", zipfile.ZIP_DEFLATED) as z:
-        for raiz, pastas, nomes in os.walk(RAIZ_CYBER):
-            pastas[:] = sorted(p for p in pastas if p not in IGNORAR_PASTAS)
-            for nome in sorted(nomes):
-                if os.path.splitext(nome)[1] in IGNORAR_EXT or nome in IGNORAR_ARQUIVOS:
-                    continue
-                caminho = os.path.join(raiz, nome)
-                interno = os.path.join("luzvital-cyber", "cyber", os.path.relpath(caminho, RAIZ_CYBER))
-                z.write(caminho, interno.replace("\\", "/"))
-                total += 1
-    print(f"{DESTINO} ({total} arquivos, {os.path.getsize(DESTINO) // 1024} KB)")
+        for caminho in arquivos:
+            interno = os.path.join("luzvital-cyber", "cyber", os.path.relpath(caminho, RAIZ_CYBER))
+            z.write(caminho, interno.replace("\\", "/"))
+    print(f"{DESTINO} ({len(arquivos)} arquivos, {os.path.getsize(DESTINO) // 1024} KB)")
     return 0
 
 

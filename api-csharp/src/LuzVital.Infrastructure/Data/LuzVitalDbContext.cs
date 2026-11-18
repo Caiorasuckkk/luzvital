@@ -14,6 +14,7 @@ public class LuzVitalDbContext : DbContext
     public DbSet<PrevisaoRisco> Previsoes => Set<PrevisaoRisco>();
     public DbSet<Alerta> Alertas => Set<Alerta>();
     public DbSet<CheckIn> CheckIns => Set<CheckIn>();
+    public DbSet<EventoSeguranca> EventosSeguranca => Set<EventoSeguranca>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -69,6 +70,19 @@ public class LuzVitalDbContext : DbContext
             e.HasOne(c => c.Voluntario).WithMany().HasForeignKey(c => c.VoluntarioId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne(c => c.Cidadao).WithMany().HasForeignKey(c => c.CidadaoId).OnDelete(DeleteBehavior.Restrict);
             e.Ignore(c => c.PedeAjuda);
+        });
+
+        mb.Entity<EventoSeguranca>(e =>
+        {
+            e.ToTable("EventosSeguranca");
+            e.HasIndex(x => x.OcorridoEm);
+            e.Property(x => x.Tipo).HasConversion<string>().HasMaxLength(30);
+            e.Property(x => x.Nivel).HasConversion<string>().HasMaxLength(10);
+            e.Property(x => x.Rota).HasMaxLength(200);
+            e.Property(x => x.TiposDeDado).HasMaxLength(200);
+            e.Property(x => x.DescricaoTecnica).HasMaxLength(500);
+            e.Property(x => x.MensagemCidadao).HasMaxLength(600);
+            e.Property(x => x.ModoIa).HasMaxLength(20);
         });
     }
 }

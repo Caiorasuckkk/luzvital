@@ -23,7 +23,7 @@ import os
 import re
 from dataclasses import asdict, dataclass, field, replace
 
-from cyber import csharp
+from cyber import csharp, exclusoes
 from cyber.pii.regras import REGRAS_POR_NOME
 from cyber.taint import config as cfg
 
@@ -599,13 +599,13 @@ def carregar_excecoes() -> dict:
 
 
 def analisar(alvo: str, base: str | None = None) -> list[Fluxo]:
-    """Roda o taint em todos os .cs do alvo (fora bin/ e obj/)."""
+    """Roda o taint em todos os .cs do alvo (fora bin/, obj/ e os arquivos de cyber/exclusoes.json)."""
     metodos: list[Metodo] = []
     for raiz, pastas, nomes in os.walk(alvo):
         pastas[:] = sorted(p for p in pastas if p not in {"bin", "obj", ".vs", "Migrations"})
         for nome in sorted(nomes):
-            if nome.endswith(".cs"):
-                caminho = os.path.join(raiz, nome)
+            caminho = os.path.join(raiz, nome)
+            if nome.endswith(".cs") and not exclusoes.excluido(caminho):
                 rel = os.path.relpath(caminho, base) if base else caminho
                 metodos.extend(ler_metodos(caminho, rel.replace("\\", "/")))
     return Analisador(metodos).executar()
